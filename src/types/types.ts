@@ -4,12 +4,15 @@ export interface boxPiece {
     y: number;
     playable: boolean;
     operation?: operation;
-    piece?: piece
+    piece?: piece;
+    hightlighted?: boolean;
 }
 
 export interface piece {
     type: 'x'|'z';
     value: number;
+    king: boolean;
+    movable: boolean;
 }
 
 export enum operation {
