@@ -1,6 +1,5 @@
 import { boxPiece, piece } from "@/types/types";
-import { regularMoveSearch } from "./regularMoveSearch";
-import { cloneDeep, pick } from "lodash";
+import { cloneDeep,  } from "lodash";
 
 export function checkMovablePieces(
     boardData: boxPiece[]
