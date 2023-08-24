@@ -1,6 +1,6 @@
 
 import { Button } from "./ui/button"
-import { DialogDemo } from "./DialogDemo"
+import ChangeGameMode from "./ChangeGameMode"
 
 interface ButtonsProps {
     showRules: () => void
@@ -20,7 +20,7 @@ export default function Buttons({showRules}: ButtonsProps) {
             >
                 Show Rules
             </Button>
-            <DialogDemo/>
+            <ChangeGameMode/>
 
         </div>
     )

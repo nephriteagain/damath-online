@@ -7,10 +7,9 @@ import GameArea from "@/components/GameArea"
 import Rules from "@/components/Rules"
 import Buttons from "@/components/Buttons"
 
-import { DialogDemo } from "@/components/DialogDemo"
 
 export default function Home() {
-  const [ openRules, setOpenRules ] = useState(true)
+  const [ openRules, setOpenRules ] = useState(false)
   
   function showRules() {
     setOpenRules((rule) => !rule)

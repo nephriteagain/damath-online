@@ -19,7 +19,7 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 
-export function DialogDemo() {
+export default function ChangeGameMode() {
     const countingRef = useRef<HTMLButtonElement>(null)
     const wholeRef = useRef<HTMLButtonElement>(null)
     const intergerRef = useRef<HTMLButtonElement>(null)
