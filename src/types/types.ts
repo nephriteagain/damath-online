@@ -1,4 +1,9 @@
 // temp type
+export interface GameState {
+    gameBoard: boxPiece[];
+    pieceToMove: null|piece
+}
+
 export interface boxPiece {
     x: number;
     y: number;
@@ -7,6 +12,17 @@ export interface boxPiece {
     piece?: piece;
     hightlighted?: boolean;
 }
+
+export interface action {
+    payload: payload;
+    type: string;
+}
+
+export interface payload {
+    index?: number;
+    piece?: piece
+}
+
 
 export interface piece {
     type: 'x'|'z';

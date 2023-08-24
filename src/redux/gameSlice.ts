@@ -1,24 +1,35 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { COUNTING } from "@/lib/data";
-import { boxPiece } from "@/types/types";
+import { boxPiece, GameState, action,  piece } from "@/types/types";
 
-interface GameState {
-    gameBoard: boxPiece[];
-}
+import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
+
 
 const initialState : GameState = {
-    gameBoard: COUNTING
+    gameBoard: COUNTING,
+    pieceToMove: null,
 }
 
 export const gameSlice = createSlice({
     name: 'game',
     initialState,
     reducers: {
-        hightlightMoves(state, action) {
-            console.log('highlight moves')
+        hightlightMoves(state: GameState, action: action) {
+            const index = action.payload.index as number;
+            const boardData = state.gameBoard as boxPiece[];
+            const piece = action.payload.piece as piece
+            if (piece.king) {
+                state
+            } else {
+                const newBoardData = regularMoveSearch(boardData, piece, index)
+                state.gameBoard = newBoardData;
+                state.pieceToMove = piece
+            }
         },
-        movePiece() {},
+        movePiece(state: GameState, action: action) {
+
+        },
     }
 })
 
