@@ -1,7 +1,8 @@
 // temp type
 export interface GameState {
     gameBoard: boxPiece[];
-    pieceToMove: null|piece
+    pieceToMove: null|piece;
+    pieceIndex: number;
 }
 
 export interface boxPiece {

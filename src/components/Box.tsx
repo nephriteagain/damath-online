@@ -4,7 +4,7 @@ import Piece from "./Piece"
 import { piece, operation } from "@/types/types";
 
 import { useAppDispatch } from "@/redux/hooks"
-import { hightlightMoves } from "@/redux/gameSlice"
+import { hightlightMoves, movePiece } from "@/redux/gameSlice"
 
 import { RiAddFill, RiSubtractFill, RiCloseFill, RiDivideFill,  } from 'react-icons/ri'
 
@@ -21,17 +21,17 @@ interface BoxProps {
 export default function Box({playable, piece, operation, index, highlighted}: BoxProps) {
     const dispatch = useAppDispatch()
 
-    function handleClick(e: MouseEvent) {
+    function handleClick(e: MouseEvent, index: number) {
         e.preventDefault();
         e.stopPropagation();
-        
-        console.log('move here!')
+
+        dispatch(movePiece({index}))
     }
 
     return (
         <div className={`relative w-full aspect-square flex items-center justify-center ${highlighted? 'bg-green-300' : ''}`}
             style={playable ? {}: {background: 'linear-gradient(to top left, #111 0%, rgba(0, 0, 0, 0.80) 75%'}}
-            onClick={highlighted ? handleClick : undefined}
+            onClick={highlighted ? (e) => handleClick(e,index) : undefined}
         >
             {
                 (piece != undefined && piece.movable) &&
