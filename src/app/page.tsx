@@ -1,5 +1,6 @@
-import Lobby from "@/components/Lobby"
+"use client"
 
+import Lobby from "@/components/Lobby"
 
 export default function Home() {
   

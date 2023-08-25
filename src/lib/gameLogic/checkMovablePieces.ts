@@ -16,25 +16,37 @@ export function checkMovablePieces(
         }
         return box
     })
-    const boardCopyWithNewMovables = boardCopy.map((box,index) => {
+    
+    const boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            const hasJumps = movableJump(boardCopy, index, box.piece)
-            if (!hasJumps) {
-                movable(boardCopy, index, box.piece)
-            }
+            movableJump(boardCopy, index, box.piece)
+            return box
         }
-
         return box
     })
-    return boardCopyWithNewMovables
+
+    // check if there is a force jumps,
+    // if there is skip checking for moves
+    if (boardCopyWithJumps.some(box => box?.piece?.movable == true)) {
+        return boardCopyWithJumps
+    }
+
+    const boardCopyWithMoves = boardCopy.map((box,index) => {
+        if (box?.piece != undefined) {
+            movable(boardCopy, index, box.piece)
+        }
+        return box
+    })
+    return boardCopyWithMoves
+    
 }
+
 
 function movableJump(
     boardData: boxPiece[],
     index: number,
     piece: piece
-) : boolean{
-    let hasChanges = false
+)  {
 
     const moveTopRight = boardData[index - 7]
     const jumpTopRight = boardData[index - 14]
@@ -54,7 +66,7 @@ function movableJump(
         jumpTopRight?.playable && jumpTopRight?.piece == undefined
     ) {
         piece.movable = true
-        hasChanges = true
+    
     }
 
     if (
@@ -62,8 +74,7 @@ function movableJump(
         moveTopLeft?.piece?.type != piece?.type &&
         jumpTopLeft?.playable && jumpTopLeft?.piece == undefined
     ) {
-        piece.movable = true
-        hasChanges = true
+        piece.movable = true    
     }
 
     if (
@@ -72,7 +83,7 @@ function movableJump(
         jumpBotRight?.playable && jumpBotRight?.piece == undefined
     ) {
         piece.movable = true
-        hasChanges = true
+    
     }
 
     if (
@@ -81,10 +92,10 @@ function movableJump(
         jumpBotLeft?.playable && jumpBotLeft?.piece == undefined
     ) {
         piece.movable = true
-        hasChanges = true
+    
     }
 
-    return hasChanges
+
 }
 
 function movable(

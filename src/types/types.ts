@@ -38,3 +38,20 @@ export enum operation {
     MULTIPLY = 'multiply',
     DIVIDE = 'divide'
 }
+
+export interface  UserTypes {
+    id: string;
+    isLoggedIn: boolean;
+    lobbies: lobbyData[];
+    joinedLobby: string;
+    lobbyData?: lobbyData
+}
+
+export interface lobbyData {
+    id: string;
+    gameType: string;
+    guest: string;
+    host: string;
+}
+
+export type lobbyDataDb = Omit<lobbyData,'id'>
