@@ -1,10 +1,11 @@
 import { MouseEvent } from "react";
 
 import Piece from "./Piece"
-import { piece, operation } from "@/types/types";
+import { piece, operation,  moveArgs } from "@/types/types";
 
-import { useAppDispatch } from "@/redux/hooks"
-import { hightlightMoves, movePiece } from "@/redux/gameSlice"
+import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+import { hightlightMoves,  } from "@/redux/gameSlice"
+import { movePiece } from "@/redux/gameThunks/thunks";
 
 import { RiAddFill, RiSubtractFill, RiCloseFill, RiDivideFill,  } from 'react-icons/ri'
 
@@ -21,11 +22,20 @@ interface BoxProps {
 export default function Box({playable, piece, operation, index, highlighted}: BoxProps) {
     const dispatch = useAppDispatch()
 
+    const {gameBoard, pieceToMove, pieceIndex, id, players, playerTurn} = useAppSelector(state => state.game)
     function handleClick(e: MouseEvent, index: number) {
         e.preventDefault();
         e.stopPropagation();
 
-        dispatch(movePiece({index}))
+
+        dispatch(movePiece({
+            boardData: gameBoard,
+            piece: pieceToMove,
+            index, 
+            pieceIndex,
+            nextTurn: playerTurn === players?.x ? players?.z : players?.x,
+            id
+        } as moveArgs))
     }
 
     return (
@@ -37,11 +47,7 @@ export default function Box({playable, piece, operation, index, highlighted}: Bo
                 (piece != undefined && piece.movable) &&
                 <Piece 
                     piece={piece}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        dispatch(hightlightMoves({index, piece}))
-                    }}
+                    index={index}
                 /> 
             }
             {

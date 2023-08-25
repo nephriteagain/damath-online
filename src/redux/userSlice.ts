@@ -1,6 +1,6 @@
 import { createSlice, } from "@reduxjs/toolkit";
 import {  UserTypes } from "@/types/types";
-import { createLobby, joinLobby, leaveLobby } from "./userThunks/thunks";
+import { createLobby, joinLobby, leaveLobby, userStartGame } from "./userThunks/thunks";
 
 function generateId() {
     return Math.random().toString(16).slice(2)
@@ -40,6 +40,9 @@ export const userSlice = createSlice({
         builder.addCase(leaveLobby.fulfilled, (state) => {
             state.joinedLobby = ''
             state.lobbyData = undefined
+        }),
+        builder.addCase(userStartGame.fulfilled, (state) => {
+            state = state            
         })
     }
 })

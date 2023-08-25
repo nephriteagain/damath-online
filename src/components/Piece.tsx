@@ -1,18 +1,38 @@
 import { MouseEvent, } from "react"
 
-import { piece } from "@/types/types"
+import { hightlightMoves } from "@/redux/gameSlice";
+import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { piece, players } from "@/types/types"
 
 
 interface PieceProps {
     piece: piece;
-    onClick?: (e: MouseEvent) => void;
+    index?: number
 }
 
 
 
-export default function Piece({piece, onClick}: PieceProps) {
-    
+export default function Piece({piece, index}: PieceProps) {
+    const {
+        players, 
+        playerTurn
+    } = useAppSelector(state => state.game)
+    const { id } = useAppSelector(state => state.user)
 
+    const dispatch = useAppDispatch()
+    
+    function handleClick(e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+        dispatch(hightlightMoves({index, piece}))
+    }
+
+    const onClick = (
+        piece.movable &&  
+        players != undefined && 
+        players[piece.type] === id &&
+        playerTurn === id
+    ) ? handleClick : undefined
 
     const { type, value, movable } = piece
     return (

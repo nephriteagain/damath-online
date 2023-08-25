@@ -1,6 +1,6 @@
 import { db } from "@/db/firebase"
-import { addDoc, doc, collection, updateDoc, getDoc, deleteDoc,  } from "firebase/firestore"
 import { createAsyncThunk } from "@reduxjs/toolkit"
+import { addDoc, doc, collection, updateDoc, getDoc, deleteDoc,  } from "firebase/firestore"
 
 import { lobbyDataDb } from "@/types/types"
 
@@ -10,7 +10,8 @@ export const createLobby = createAsyncThunk(
         const colRef = await addDoc(collection(db, 'lobbies'), {
             gameType: 'COUNTING',
             host: userId,
-            guest: ''            
+            guest: '',
+            start: false
         })
         const docRef = doc(db, 'lobbies', colRef.id)
         const lobbyData = await getDoc(docRef)
@@ -47,6 +48,7 @@ export const joinLobby = createAsyncThunk(
     }
 )
 
+
 export const leaveLobby = createAsyncThunk(
     'user/leaveLobby',
     async (args: LobbyArgs) => {
@@ -75,3 +77,14 @@ async function leave(args: LobbyArgs) {
         
     }    
 }
+
+export const userStartGame = createAsyncThunk(
+    'user/startGame',
+    async (lobbyId: string) => {
+        const docRef = doc(db, 'lobbies', lobbyId);
+        await updateDoc(docRef, {
+            start: true
+        })
+        return
+    }
+)

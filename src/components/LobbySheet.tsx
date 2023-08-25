@@ -1,23 +1,29 @@
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 
 import {
     SheetClose,
     SheetContent,
-    SheetDescription,
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet"
+
 
 import { db } from "@/db/firebase"
 import { onSnapshot, doc, } from "firebase/firestore"
 
 import { updateLobby } from "@/redux/userSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+
 import { leaveLobby } from "@/redux/userThunks/thunks"
+import { userStartGame } from "@/redux/userThunks/thunks"
+import { startGame } from "@/redux/gameThunks/thunks"
 
 import { lobbyDataDb } from "@/types/types"
 
 export default function LobbySheet() {
+    const router = useRouter()
+
     const dispatch = useAppDispatch()
     const {id: userId, joinedLobby: lobbyId, lobbyData} = useAppSelector(state => state.user)
 
@@ -29,6 +35,16 @@ export default function LobbySheet() {
                 const data = querySnapshot.data() as lobbyDataDb;
                 const id = querySnapshot.id;
                 const lobbyData = {...data, id}
+
+                if (data.start) {
+                    // TODO : dont forget to delete the old db
+                    dispatch(startGame(lobbyData))
+                    dispatch(leaveLobby({userId, lobbyId}))
+                    dispatch(updateLobby(undefined))
+                    router.push('/game')
+                    return
+                }
+
                 dispatch(updateLobby(lobbyData))
                 return
             }
@@ -43,10 +59,6 @@ export default function LobbySheet() {
         <SheetTitle className="text-center font-bold text-2xl mb-4">
             LOBBY
         </SheetTitle>
-        {/* <SheetDescription>
-            This action cannot be undone. This will permanently delete your account
-            and remove your data from our servers.
-        </SheetDescription> */}
         </SheetHeader>
         {lobbyData != undefined && <div className="mb-4">
             <div className="mb-4">
@@ -63,11 +75,14 @@ export default function LobbySheet() {
             </div>                        
         </div>}
         <div className="flex flex-row justify-between mt-4">            
-            <SheetClose
-                className="bg-green-300 px-3 py-1 rounded-md shadow-md drop-shadow-md hover:scale-105 hover:bg-green-700 hover:text-white active:scale-100 transition-all duration-150"
+              { userId === lobbyData?.host &&
+                <SheetClose
+                className="bg-green-300 px-3 py-1 rounded-md shadow-md drop-shadow-md hover:scale-105 hover:bg-green-700 hover:text-white active:scale-100 transition-all duration-150 disabled:opacity-50"
+                disabled={lobbyData.guest.length === 0}
+                onClick={() => dispatch(userStartGame(lobbyId))}
             >
                 Start Game
-            </SheetClose>
+            </SheetClose>}
             <SheetClose
                 className="bg-red-300 px-3 py-1 rounded-md shadow-md drop-shadow-md hover:scale-105 hover:bg-red-700 hover:text-white active:scale-100 transition-all duration-150"
                 onClick={() => {

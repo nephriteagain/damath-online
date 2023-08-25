@@ -3,6 +3,14 @@ export interface GameState {
     gameBoard: boxPiece[];
     pieceToMove: null|piece;
     pieceIndex: number;
+    id?: string;
+    players?: players;
+    playerTurn?: string;
+}
+
+export interface players {
+    z: string;
+    x: string;
 }
 
 export interface boxPiece {
@@ -17,11 +25,14 @@ export interface boxPiece {
 export interface action {
     payload: payload;
     type: string;
+    
 }
 
 export interface payload {
     index?: number;
-    piece?: piece
+    piece?: piece;
+    gameBoard?: boxPiece[];
+    playerTurn?: string
 }
 
 
@@ -49,9 +60,31 @@ export interface  UserTypes {
 
 export interface lobbyData {
     id: string;
-    gameType: string;
+    gameType: GameTypes;
     guest: string;
     host: string;
+    start: boolean
+}
+
+export enum GameTypes  {
+    COUNTING = 'COUNTING',
 }
 
 export type lobbyDataDb = Omit<lobbyData,'id'>
+
+export interface gameData {
+    id: string;
+    players: players;
+    playerTurn: string;
+    gameType: GameTypes;
+    boardData: boxPiece[];
+}
+
+export interface moveArgs {
+    boardData : boxPiece[],
+    piece : piece,
+    index : number,
+    pieceIndex : number,
+    nextTurn : string,
+    id: string
+}
