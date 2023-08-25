@@ -20,6 +20,12 @@ export const userSlice = createSlice({
     reducers: {  
         getLobbies(state, action) {
             state.lobbies = action.payload
+        },
+        updateLobby(state, action) {
+            state.lobbyData = action.payload
+            if (action.payload === undefined) {
+                state.joinedLobby = ''
+            }
         }
     },
     extraReducers: (builder) => {
@@ -38,6 +44,6 @@ export const userSlice = createSlice({
     }
 })
 
-export const { getLobbies } = userSlice.actions
+export const { getLobbies, updateLobby } = userSlice.actions
 
 export default userSlice.reducer

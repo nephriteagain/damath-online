@@ -20,7 +20,7 @@ export default function JoinLobbySheet({lobbyId, guest} : JoinLobbySheetProps) {
     return (
         <Sheet>
             <SheetTrigger
-                className="py-[0px] px-3 text-black bg-slate-200 shadow-md drop-shadow-sm hover:bg-green-300 hover:border-green-300 active:bg-green-400 transition-all duration-200 rounded-sm disabled:opacity-50"
+                className="py-[0px] px-3 font-semibold text-black bg-slate-200 shadow-md drop-shadow-sm hover:bg-green-300 hover:border-green-300 active:bg-green-400 transition-all duration-200 rounded-sm disabled:opacity-50"
                 disabled={guest.length > 0 || joinedLobby.length > 0}
                 onClick={() => {
                     dispatch(joinLobby({
@@ -29,7 +29,7 @@ export default function JoinLobbySheet({lobbyId, guest} : JoinLobbySheetProps) {
                     }))
                 }}
             >
-                Join
+                JOIN
             </SheetTrigger>
             <LobbySheet />
         </Sheet>
