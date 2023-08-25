@@ -37,7 +37,7 @@ export default function Piece({piece, index}: PieceProps) {
     const { type, value, movable } = piece
     return (
         <div className={`z-10 ${type === 'z' ? 'red-piece' : 'blue-piece'}
-            ${movable ? 'opacity-100' : 'opacity-50'}
+            ${movable ? 'opacity-100' : 'opacity-70'}
             flex items-center justify-center aspect-square w-[80%] text-2xl text-white rounded-full cursor-pointer`}
             onClick={onClick}
         >
