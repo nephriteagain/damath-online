@@ -1,5 +1,6 @@
 import { boxPiece, piece } from "@/types/types";
 import { cloneDeep,  } from "lodash";
+import { toAdd } from "./kingMoveSearch/kingMoveSearch";
 
 export function checkMovablePieces(
     boardData: boxPiece[]
@@ -19,7 +20,15 @@ export function checkMovablePieces(
     
     const boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            movableJump(boardCopy, index, box.piece)
+            if (box.piece.king) {
+                kingJumpable(boardCopy, box.piece, index, -7)
+                kingJumpable(boardCopy, box.piece, index, -9)
+                kingJumpable(boardCopy, box.piece, index, 7)
+                kingJumpable(boardCopy, box.piece, index, 9)
+            }
+            if (!box.piece.king) {
+                movableJump(boardCopy, index, box.piece)
+            }
             return box
         }
         return box
@@ -33,7 +42,15 @@ export function checkMovablePieces(
 
     const boardCopyWithMoves = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            movable(boardCopy, index, box.piece)
+            if (box.piece.king) {
+                kingMovable(boardCopy, box.piece, index, -7)
+                kingMovable(boardCopy, box.piece, index, -9)
+                kingMovable(boardCopy, box.piece, index, 7)
+                kingMovable(boardCopy, box.piece, index, 9)
+            }
+            if (!box.piece.king) {
+                movable(boardCopy, index, box.piece)
+            }
         }
         return box
     })
@@ -41,6 +58,43 @@ export function checkMovablePieces(
     
 }
 
+
+function kingMovable(
+    boardData: boxPiece[],
+    piece: piece,
+    index: number,
+    number: number
+) {
+    const numToAdd = toAdd(number)
+    const move = boardData[index + number]
+    if ( move?.playable && move?.piece == undefined ) {
+        piece.movable = true
+        kingMovable(boardData, piece, index, (number + numToAdd))
+    }
+}
+
+function kingJumpable(
+    boardData: boxPiece[],
+    piece: piece,
+    index: number,
+    number: number
+) {
+    const numToAdd = toAdd(number)
+    
+    const move = boardData[index + number]
+    const jump = boardData[index + (number+numToAdd)]
+    if (move?.playable && move?.piece == undefined) {
+        kingJumpable(boardData, piece, (index + numToAdd), number)
+    }
+
+    if (
+        move?.playable && move?.piece !== undefined &&
+        move?.piece?.type !== piece?.type &&
+        jump?.playable && jump?.piece == undefined
+    ) {
+        kingMovable(boardData, piece,  index + number, number)
+    }
+}
 
 function movableJump(
     boardData: boxPiece[],

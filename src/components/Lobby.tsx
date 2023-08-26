@@ -9,6 +9,7 @@ import { lobbyData } from "@/types/types"
 import CreateLobbySheet from "./CreateLobbySheet"
 import JoinLobbySheet from "./JoinLobbySheet"
 
+// TODO fix the player x not working
 export default function Lobby() {
     const dispatch = useAppDispatch()
 

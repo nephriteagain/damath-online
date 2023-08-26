@@ -22,6 +22,7 @@ export default function Piece({piece, index}: PieceProps) {
     const dispatch = useAppDispatch()
     
     function handleClick(e: MouseEvent) {
+        console.log('on click')
         e.preventDefault();
         e.stopPropagation();
         dispatch(hightlightMoves({index, piece}))

@@ -1,7 +1,9 @@
 import { cloneDeep } from 'lodash';
 import { boxPiece, piece } from "@/types/types";
 
-export function regularMovePiece(
+import { POSSIBLEJUMPS, POSSIBLEJUMPSTYPE } from '../data';
+
+export function movePiece(
     boardData: boxPiece[],
     piece: piece, 
     index:number,
@@ -29,6 +31,9 @@ export function regularMovePiece(
 
         return box
     })
+    if (piece.king) {
+        const boardCopyWithoutCaptured = removeCapturedAsKing(boardCopy, index, pieceIndex)
+    }
     const boardCopyWithoutCaptured = removeCaptured(boardCopy, index, pieceIndex)
 
     return boardCopyWithoutCaptured
@@ -51,5 +56,29 @@ function removeCaptured(
         delete boardCopy[higher-9]?.piece
     }
 
+    return boardCopy
+}
+
+function removeCapturedAsKing(
+    boardData: boxPiece[], 
+    index: number, 
+    pieceIndex: number
+) : boxPiece[] {
+
+    const boardCopy = cloneDeep(boardData)
+    const higher = Math.max(index, pieceIndex)
+    const lower = Math.min(index, pieceIndex)
+
+    const array = POSSIBLEJUMPS.find(arr => {
+        return arr.includes(higher) && arr.includes(lower)
+    })
+    if (array) {
+        array.forEach((num) => {
+            if (num > lower && num < higher) {
+                delete boardCopy[num].piece
+            }
+        })
+    }
+    
     return boardCopy
 }

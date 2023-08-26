@@ -4,8 +4,7 @@ import { COUNTING } from "@/lib/data";
 import { boxPiece, GameState, action,  piece } from "@/types/types";
 
 import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
-import { regularMovePiece } from "@/lib/gameLogic/regularMovePiece";
-import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces";
+import { kingMoveSearch } from "@/lib/gameLogic/kingMoveSearch/kingMoveSearch";
 
 import { startGame, movePiece, leaveGame } from "./gameThunks/thunks";
 
@@ -25,6 +24,11 @@ export const gameSlice = createSlice({
             const boardData = state.gameBoard as boxPiece[];
             const piece = action.payload.piece as piece
             if (piece.king) {
+                console.log('hl king')
+                const newBoardData = kingMoveSearch(boardData, piece, index)
+                state.gameBoard = newBoardData;
+                state.pieceToMove = piece
+                state.pieceIndex = index
             } else {
                 const newBoardData = regularMoveSearch(boardData, piece, index)
                 state.gameBoard = newBoardData;

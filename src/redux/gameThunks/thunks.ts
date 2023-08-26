@@ -6,7 +6,7 @@ import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"
 import { COUNTING } from "@/lib/data"
 
 import { gameData, boxPiece, piece, moveArgs} from "@/types/types"
-import { regularMovePiece } from "@/lib/gameLogic/regularMovePiece"
+import { movePiece as movePieceHelper } from "@/lib/gameLogic/movePiece"
 import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces"
 
 const games = {
@@ -45,16 +45,15 @@ export const movePiece = createAsyncThunk(
     async (moveArgs: moveArgs) => {
         const { boardData, piece, index, pieceIndex, nextTurn, id } = moveArgs
         const docRef = doc(db, 'games', id)
-        if (!piece.king) {
-            const newBoardData = regularMovePiece(boardData, piece, index, pieceIndex)
-            const boardDataWithNewMoves = checkMovablePieces(newBoardData)
-            await updateDoc(docRef, {
-                playerTurn: nextTurn,
-                boardData: boardDataWithNewMoves
-            })
-            return
-        }
-    }
+
+        const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex)
+        const boardDataWithNewMoves = checkMovablePieces(newBoardData)
+        await updateDoc(docRef, {
+            playerTurn: nextTurn,
+            boardData: boardDataWithNewMoves
+        })
+        return
+    }    
 )
 
 export const leaveGame = createAsyncThunk(
