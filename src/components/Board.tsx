@@ -5,12 +5,27 @@ import { db } from "@/db/firebase"
 import { onSnapshot } from "firebase/firestore"
 import { doc, } from "firebase/firestore"
 import { gameData } from "@/types/types"
-import { adjustPieces } from "@/redux/gameSlice"
+import { adjustPieces, playerLeft } from "@/redux/gameSlice"
+
+import { useToast } from "./ui/use-toast"
+import { debounce } from "lodash"
+
+import { redirect, useRouter } from 'next/navigation'
 
 export default function Board() {
     const dispatch = useAppDispatch()
+    const {toast} = useToast()
 
     const { gameBoard, id } = useAppSelector(state => state.game)
+    const router = useRouter()
+
+    function handleDelay() {
+        console.log('run delay')
+        dispatch(playerLeft())
+        router.replace('/')
+    }
+    const debounced = debounce(handleDelay, 3000)
+
 
     useEffect(() => {
         if (!id) return
@@ -18,7 +33,13 @@ export default function Board() {
         const unsub = onSnapshot(docRef, snapshot => {
             if (snapshot.exists()) {
                 const data = snapshot.data() as gameData
-                const { boardData, playerTurn } = data
+                const { boardData, playerTurn, gameOngoing } = data
+                // TODO handle player leaving the game
+                if (!gameOngoing) {
+                    toast({description: 'A player had left the game.'})
+                    debounced()
+                }
+
                 dispatch(adjustPieces({
                     gameBoard: boardData,
                     playerTurn
@@ -29,7 +50,8 @@ export default function Board() {
     }, [id])
 
     return (
-        <div className="board relative w-[550px] aspect-square grid grid-cols-8 grid-rows-[8] bg-slate-100 shadow-xl drop-shadow-lg">
+        <div className="board relative w-[550px] aspect-square grid grid-cols-8 grid-rows-[8] bg-slate-100 shadow-xl drop-shadow-lg"
+        >
             {gameBoard.map((item,index) => {
                 const { playable, piece, operation, hightlighted } = item
                 return (

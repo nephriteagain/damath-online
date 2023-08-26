@@ -25,7 +25,8 @@ export const startGame = createAsyncThunk(
             },
             playerTurn: host,
             gameType,
-            boardData : games[`${gameType}`]
+            boardData : games[`${gameType}`],
+            gameOngoing: true,
          }
          const docRef = doc(db, 'games', id)
          await setDoc(docRef, data)
@@ -53,5 +54,20 @@ export const movePiece = createAsyncThunk(
             })
             return
         }
+    }
+)
+
+export const leaveGame = createAsyncThunk(
+    'game/leave',
+    async (gameId: string) => {
+        const docRef = doc(db, 'games', gameId)
+        try {
+            await updateDoc(docRef, {
+                gameOngoing: false
+            })
+        } catch (error) {
+            console.error(error)
+        }
+        
     }
 )

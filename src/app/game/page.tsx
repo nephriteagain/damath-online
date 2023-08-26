@@ -6,11 +6,19 @@ import { useState } from "react"
 import GameArea from "@/components/GameArea"
 import Rules from "@/components/Rules"
 import Buttons from "@/components/Buttons"
+import { useAppSelector } from "@/redux/hooks"
+import { Toaster } from "@/components/ui/toaster"
 
+import { redirect } from "next/navigation" 
 
 export default function Home() {
   const [ openRules, setOpenRules ] = useState(false)
-  
+  const { id } = useAppSelector(state => state.game)
+
+  if (!id) {
+    redirect('/')
+  }
+
   function showRules() {
     setOpenRules((rule) => !rule)
   }
@@ -22,10 +30,11 @@ export default function Home() {
       { openRules && <Rules
         openRules={openRules}
         setOpenRules={setOpenRules}
-      /> }
+        /> }
       <Buttons 
         showRules={showRules}
-      />
+        />
+      <Toaster />
 
     </main>
   )

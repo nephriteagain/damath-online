@@ -7,12 +7,13 @@ import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
 import { regularMovePiece } from "@/lib/gameLogic/regularMovePiece";
 import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces";
 
-import { startGame, movePiece } from "./gameThunks/thunks";
+import { startGame, movePiece, leaveGame } from "./gameThunks/thunks";
 
 const initialState : GameState = {
     gameBoard: COUNTING,
     pieceToMove: null,
     pieceIndex: -1,
+    gameOngoing: false
 }
 
 export const gameSlice = createSlice({
@@ -39,6 +40,16 @@ export const gameSlice = createSlice({
                 state.gameBoard = action.payload?.gameBoard;
                 state.playerTurn = action.payload?.playerTurn
             }
+        },
+        playerLeft(state) {
+            state.gameBoard = COUNTING;
+            state.pieceToMove = null;
+            state.pieceIndex = -1
+            state.gameOngoing = false
+            state.id = undefined;
+            state.players = undefined;
+            state.playerTurn = undefined;
+            
         }
         // movePiece(state: GameState, action: action) {            
             
@@ -67,22 +78,27 @@ export const gameSlice = createSlice({
                     id, 
                     players, 
                     playerTurn, 
-                    boardData 
+                    boardData,
+                    gameOngoing 
                 } = action.payload
 
                 state.gameBoard = boardData;
                 state.id = id;
                 state.players = players;
                 state.playerTurn = playerTurn;
+                state.gameOngoing = gameOngoing
             }
         }),
         builder.addCase(movePiece.fulfilled, (state) => {
             state.pieceToMove = null;
             state.pieceIndex = -1
+        }),
+        builder.addCase(leaveGame.fulfilled, (state) => {
+            state.gameOngoing = false
         })
     }
 })
 
-export const { hightlightMoves, adjustPieces } = gameSlice.actions
+export const { hightlightMoves, adjustPieces, playerLeft } = gameSlice.actions
 
 export default gameSlice.reducer

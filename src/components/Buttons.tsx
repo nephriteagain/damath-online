@@ -1,6 +1,7 @@
 
 import { Button } from "./ui/button"
 import ChangeGameMode from "./ChangeGameMode"
+import LeaveGame from "./LeaveGame"
 
 interface ButtonsProps {
     showRules: () => void
@@ -21,11 +22,7 @@ export default function Buttons({showRules}: ButtonsProps) {
             >
                 Restart Game
             </Button>
-            <Button variant="destructive"
-                className="text-md shadow-sm drop-shadow-md hover:scale-105 active:scale-95 transition-all duration-150"
-            >
-                Leave Game
-            </Button>
+            <LeaveGame />
             <ChangeGameMode/>
 
         </div>

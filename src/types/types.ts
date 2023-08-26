@@ -3,6 +3,7 @@ export interface GameState {
     gameBoard: boxPiece[];
     pieceToMove: null|piece;
     pieceIndex: number;
+    gameOngoing: boolean;
     id?: string;
     players?: players;
     playerTurn?: string;
@@ -78,6 +79,7 @@ export interface gameData {
     playerTurn: string;
     gameType: GameTypes;
     boardData: boxPiece[];
+    gameOngoing: boolean;
 }
 
 export interface moveArgs {
