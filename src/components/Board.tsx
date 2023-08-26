@@ -10,7 +10,7 @@ import { adjustPieces, playerLeft } from "@/redux/gameSlice"
 import { useToast } from "./ui/use-toast"
 import { debounce } from "lodash"
 
-import { redirect, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 export default function Board() {
     const dispatch = useAppDispatch()

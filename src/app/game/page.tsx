@@ -5,7 +5,7 @@ import { useState } from "react"
 
 import GameArea from "@/components/GameArea"
 import Rules from "@/components/Rules"
-import Buttons from "@/components/Buttons"
+import Buttons from "@/components/Settings"
 import { useAppSelector } from "@/redux/hooks"
 import { Toaster } from "@/components/ui/toaster"
 

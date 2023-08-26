@@ -19,13 +19,31 @@ import { leaveLobby } from "@/redux/userThunks/thunks"
 import { userStartGame } from "@/redux/userThunks/thunks"
 import { startGame } from "@/redux/gameThunks/thunks"
 
-import { lobbyDataDb } from "@/types/types"
+import { lobbyData, lobbyDataDb } from "@/types/types"
+import { debounce } from "lodash"
+import { useToast } from "./ui/use-toast"
 
 export default function LobbySheet() {
     const router = useRouter()
 
     const dispatch = useAppDispatch()
+    const { toast } = useToast()
+
     const {id: userId, joinedLobby: lobbyId, lobbyData} = useAppSelector(state => state.user)
+
+    async function gameStartHandler(lobbyData: lobbyData) {
+        try {
+            await dispatch(startGame(lobbyData))
+            await dispatch(leaveLobby({userId, lobbyId}))
+            dispatch(updateLobby(undefined))
+            router.push('/game')
+        } catch (error) {
+            console.error(error)   
+        }
+        
+    }   
+
+    const debouncedGameStartHandler = debounce(gameStartHandler, 2000)
 
     useEffect(() => {
         if (!lobbyData) return
@@ -37,11 +55,8 @@ export default function LobbySheet() {
                 const lobbyData = {...data, id}
 
                 if (data.start) {
-                    // TODO : dont forget to delete the old db
-                    dispatch(startGame(lobbyData))
-                    dispatch(leaveLobby({userId, lobbyId}))
-                    dispatch(updateLobby(undefined))
-                    router.push('/game')
+                    toast({title: 'Game Starting...'})
+                    debouncedGameStartHandler(lobbyData)
                     return
                 }
 
