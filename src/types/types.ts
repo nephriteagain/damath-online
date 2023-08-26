@@ -88,5 +88,6 @@ export interface moveArgs {
     index : number,
     pieceIndex : number,
     nextTurn : string,
-    id: string
+    id: string,
+    players: players
 }

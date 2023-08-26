@@ -11,9 +11,10 @@ function generateId() {
 //     localStorage.setItem('damath-id', generateId())
 //     savedId = localStorage.getItem('damath-id') as string
 // }
+const newId = generateId() as string
 
 const initialState : UserTypes = {
-    id: generateId(),
+    id: newId,
     isLoggedIn: false,
     lobbies: [],
     joinedLobby: '',

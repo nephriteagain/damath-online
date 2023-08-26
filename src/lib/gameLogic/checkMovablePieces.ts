@@ -1,9 +1,10 @@
-import { boxPiece, piece } from "@/types/types";
+import { boxPiece, piece, players } from "@/types/types";
 import { cloneDeep,  } from "lodash";
 import { toAdd } from "./kingMoveSearch/kingMoveSearch";
 
 export function checkMovablePieces(
-    boardData: boxPiece[]
+    boardData: boxPiece[],
+    playerToCheck: 'x'|'z'
 ) : boxPiece[] {
     const boardCopy = cloneDeep(boardData).map(box => {
         if (box?.piece) {
@@ -20,13 +21,13 @@ export function checkMovablePieces(
     
     const boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            if (box.piece.king) {
+            if (box.piece.king && box.piece.type === playerToCheck) {
                 kingJumpable(boardCopy, box.piece, index, -7)
                 kingJumpable(boardCopy, box.piece, index, -9)
                 kingJumpable(boardCopy, box.piece, index, 7)
                 kingJumpable(boardCopy, box.piece, index, 9)
             }
-            if (!box.piece.king) {
+            if (!box.piece.king && box.piece.type === playerToCheck) {
                 movableJump(boardCopy, index, box.piece)
             }
             return box
@@ -42,13 +43,13 @@ export function checkMovablePieces(
 
     const boardCopyWithMoves = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            if (box.piece.king) {
+            if (box.piece.king && box.piece.type === playerToCheck) {
                 kingMovable(boardCopy, box.piece, index, -7)
                 kingMovable(boardCopy, box.piece, index, -9)
                 kingMovable(boardCopy, box.piece, index, 7)
                 kingMovable(boardCopy, box.piece, index, 9)
             }
-            if (!box.piece.king) {
+            if (!box.piece.king && box.piece.type === playerToCheck) {
                 movable(boardCopy, index, box.piece)
             }
         }

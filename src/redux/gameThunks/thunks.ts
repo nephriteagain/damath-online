@@ -1,3 +1,4 @@
+import { players } from './../../types/types';
 import { db } from "@/db/firebase"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { lobbyData } from "@/types/types"
@@ -43,11 +44,12 @@ export const startGame = createAsyncThunk(
 export const movePiece = createAsyncThunk(
     'game/move',
     async (moveArgs: moveArgs) => {
-        const { boardData, piece, index, pieceIndex, nextTurn, id } = moveArgs
+        const { boardData, piece, index, pieceIndex, nextTurn, id, players } = moveArgs
         const docRef = doc(db, 'games', id)
 
         const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex)
-        const boardDataWithNewMoves = checkMovablePieces(newBoardData)
+        const playerToCheck = players.x === nextTurn ? 'x' : 'z'
+        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck)
         await updateDoc(docRef, {
             playerTurn: nextTurn,
             boardData: boardDataWithNewMoves
