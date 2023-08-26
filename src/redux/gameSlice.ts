@@ -24,12 +24,12 @@ export const gameSlice = createSlice({
             const boardData = state.gameBoard as boxPiece[];
             const piece = action.payload.piece as piece
             if (piece.king) {
-                console.log('hl king')
                 const newBoardData = kingMoveSearch(boardData, piece, index)
                 state.gameBoard = newBoardData;
                 state.pieceToMove = piece
                 state.pieceIndex = index
-            } else {
+            } 
+            if (!piece.king) {
                 const newBoardData = regularMoveSearch(boardData, piece, index)
                 state.gameBoard = newBoardData;
                 state.pieceToMove = piece

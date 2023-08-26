@@ -17,13 +17,13 @@ export default function Buttons({showRules}: ButtonsProps) {
             >
                 Show Rules
             </Button>
-            <Button variant="destructive"
+            {/* <Button variant="destructive"
                 className="text-md shadow-sm drop-shadow-md hover:scale-105 active:scale-95 transition-all duration-150"
             >
                 Restart Game
-            </Button>
+            </Button> */}
             <LeaveGame />
-            <ChangeGameMode/>
+            {/* <ChangeGameMode/> */}
 
         </div>
     )

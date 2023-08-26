@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react"
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 import { createLobby } from "@/redux/userThunks/thunks"
 
@@ -9,6 +11,8 @@ import {
   import LobbySheet from "./LobbySheet"
 
   export default function CreateLobbySheet() {
+    const dataRef = useRef<HTMLDivElement>(null)
+
     const dispatch = useAppDispatch()
     // const id = useAppSelector(state => state.user.id)
     const {
@@ -19,6 +23,11 @@ import {
     async function handleClick() {
         await dispatch(createLobby(id))
     }
+
+    useEffect(() => {
+       const el = dataRef.current as HTMLDivElement
+       el.innerText = id
+    }, [])
 
     return (
         <Sheet>
@@ -33,6 +42,9 @@ import {
                 Show Lobby
             </SheetTrigger>
             }
+            <div className="mt-2 text-white text-sm opacity-80" ref={dataRef}>
+                {/* Your ID: {id} */}
+            </div>
             <LobbySheet />
         </Sheet>
     )

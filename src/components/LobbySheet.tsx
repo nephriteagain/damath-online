@@ -34,9 +34,9 @@ export default function LobbySheet() {
     async function gameStartHandler(lobbyData: lobbyData) {
         try {
             await dispatch(startGame(lobbyData))
-            await dispatch(leaveLobby({userId, lobbyId}))
             dispatch(updateLobby(undefined))
             router.push('/game')
+            await dispatch(leaveLobby({userId, lobbyId}))
         } catch (error) {
             console.error(error)   
         }
@@ -65,7 +65,10 @@ export default function LobbySheet() {
             }
             dispatch(updateLobby(undefined))
         })
-        return () => unsub()
+        return () => {
+            console.log('unsubbed to Lobby ' + lobbyId)
+            unsub()
+        }
     }, [lobbyData])
 
     return (

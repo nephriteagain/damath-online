@@ -10,19 +10,15 @@ import { adjustPieces, playerLeft } from "@/redux/gameSlice"
 import { useToast } from "./ui/use-toast"
 import { debounce } from "lodash"
 
-import { useRouter } from 'next/navigation'
 
 export default function Board() {
     const dispatch = useAppDispatch()
     const {toast} = useToast()
 
     const { gameBoard, id } = useAppSelector(state => state.game)
-    const router = useRouter()
 
-    function handleDelay() {
-        console.log('run delay')
+    async function handleDelay() {
         dispatch(playerLeft())
-        router.replace('/')
     }
     const debounced = debounce(handleDelay, 3000)
 
@@ -46,7 +42,10 @@ export default function Board() {
                 }))
             }
         })
-        return () => unsub()
+        return () => {
+            console.log('unsubbed to Board')
+            unsub()
+        }
     }, [id])
 
     return (

@@ -6,6 +6,12 @@ function generateId() {
     return Math.random().toString(16).slice(2)
 }
 
+// let  savedId = localStorage.getItem('damath-id') as string
+// if (!savedId) {
+//     localStorage.setItem('damath-id', generateId())
+//     savedId = localStorage.getItem('damath-id') as string
+// }
+
 const initialState : UserTypes = {
     id: generateId(),
     isLoggedIn: false,
@@ -14,7 +20,8 @@ const initialState : UserTypes = {
 }
 
 
-export const userSlice = createSlice({
+
+export const userSlice = createSlice({    
     name: 'user',
     initialState: initialState,
     reducers: {  

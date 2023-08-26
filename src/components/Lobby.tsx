@@ -35,7 +35,10 @@ export default function Lobby() {
             })
             dispatch(getLobbies(lobbyList))
         })
-        return () => unsub()
+        return () => {
+            console.log('unsubbed to Lobbies')
+            unsub()
+        }
 
     }, [])
 
