@@ -52,24 +52,24 @@ export default function LobbySheet() {
             if (querySnapshot.exists()) {
                 const data = querySnapshot.data() as lobbyDataDb;
                 const id = querySnapshot.id;
-                const lobbyData = {...data, id}
+                const newLobbyData = {...data, id}
 
                 if (data.start) {
                     toast({title: 'Game Starting...'})
-                    debouncedGameStartHandler(lobbyData)
+                    debouncedGameStartHandler(newLobbyData)
                     return
                 }
 
-                dispatch(updateLobby(lobbyData))
+                dispatch(updateLobby(newLobbyData))
                 return
             }
             dispatch(updateLobby(undefined))
         })
         return () => {
-            console.log('unsubbed to Lobby ' + lobbyId)
+            console.log('unsubbed to Lobby')
             unsub()
         }
-    }, [lobbyData])
+    }, [lobbyId])
 
     return (
         <SheetContent className="bg-slate-300">
