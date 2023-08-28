@@ -1,4 +1,4 @@
-import { useRef, MouseEvent } from "react"
+import {  MouseEvent } from "react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,6 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 
+import { requestChangeGameMode } from "@/redux/gameThunks/thunks"
 
 import {
     Select,
@@ -19,11 +20,21 @@ import {
     SelectValue,
   } from "@/components/ui/select"
 
-export default function ChangeGameMode() {
-    const countingRef = useRef<HTMLButtonElement>(null)
-    const wholeRef = useRef<HTMLButtonElement>(null)
-    const intergerRef = useRef<HTMLButtonElement>(null)
 
+  
+import { GameTypes } from "@/types/types"
+import { useAppDispatch, useAppSelector } from "@/redux/hooks"
+
+export default function ChangeGameMode() {
+    const dispatch = useAppDispatch()
+    const { id } = useAppSelector(state => state.game)
+    const { id: userId } = useAppSelector(state => state.user)
+
+    async function handleClick(e: MouseEvent<HTMLButtonElement>) {
+        const gameType = e.currentTarget.innerText.trim() as GameTypes
+        const gameId = id as string
+        dispatch(requestChangeGameMode({userId, gameId, gameType}))
+    }
 
     return (
         <Dialog>
@@ -42,22 +53,22 @@ export default function ChangeGameMode() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <Button variant='outline'
-                    ref={countingRef}
+                onClick={handleClick}
                 >
-                    Counting
+                    COUNTING
                 </Button>
                 <Button variant='outline'
-                    ref={wholeRef}
+                onClick={handleClick}
                 >
-                    Whole
+                    WHOLE
                 </Button>
                 <Button variant='outline'
-                    ref={intergerRef}
+                onClick={handleClick}
                 >
-                    Integer
+                    INTEGER
                 </Button>
             <Select>
-                <SelectTrigger className="w-[180px]">
+                {/* <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Timer" />
                 </SelectTrigger>
                 <SelectContent>
@@ -66,14 +77,14 @@ export default function ChangeGameMode() {
                     <SelectItem value="3:00">3:00</SelectItem>
                     <SelectItem value="10:00">10:00</SelectItem>
                     <SelectItem value="No Timer">No Timer</SelectItem>
-                </SelectContent>
+                </SelectContent> */}
             </Select>
             </div>
-            <DialogFooter>
+            {/* <DialogFooter>
             <Button>
                 Start Game
             </Button>
-            </DialogFooter>
+            </DialogFooter> */}
         </DialogContent>
         </Dialog>
     )

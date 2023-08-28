@@ -87,12 +87,15 @@ export interface gameData {
 
 export interface message {
     sender: string;
-    type: messageType
+    type: messageType;
+    data: GameTypes
 }
 
 export enum messageType {
     REQUEST_RESTART,
     APPROVE_RESTART,
+    REQUEST_CHANGE_GAME_MODE,
+    APPROVE_CHANGE_GAME_MODE,
 }
 
 export interface moveArgs {

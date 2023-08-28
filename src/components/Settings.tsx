@@ -31,7 +31,7 @@ export default function Settings({showRules}: ButtonsProps) {
                 Restart Game
             </Button>
             <LeaveGame />
-            {/* <ChangeGameMode/> */}
+            <ChangeGameMode/>
 
         </div>
     )
