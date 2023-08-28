@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks"
 import { Toaster } from "@/components/ui/toaster"
 
 import { redirect } from "next/navigation" 
-import { approveRestart, gameOver } from "@/redux/gameThunks/thunks"
+import { approveRestart, gameOver, approveChangeGameMode } from "@/redux/gameThunks/thunks"
 import { db } from "@/db/firebase"
 import { doc, onSnapshot, } from "firebase/firestore"
 import { gameData, messageType } from "@/types/types"
@@ -75,6 +75,31 @@ export default function Home() {
                       duration: 3000
                     })
                     delayedDispatch(approveRestart({id, gameType }))}
+                  }
+                  >
+                    APPROVE
+                    </ToastAction>,
+                })
+              }
+            }
+
+            if (message?.type === messageType.REQUEST_CHANGE_GAME_MODE) {
+              if (message.sender === userId) {
+                toast({
+                  description: 'request sent, wait for approval',
+                  duration: 2000
+                })
+              } else {
+                toast({
+                  description: 'a player is requesting to change game mode, click to approve',
+                  duration: 10000,
+                  action: <ToastAction altText="APPROVE" 
+                  onClick={() => {
+                    toast({
+                      description: 'change game mode request approved, restarting game...',
+                      duration: 3000
+                    })
+                    delayedDispatch(approveChangeGameMode({id, gameType: message?.data || gameType }))}
                   }
                   >
                     APPROVE

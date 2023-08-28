@@ -134,3 +134,34 @@ export const gameOver = createAsyncThunk(
         
     }
 )
+
+export const requestChangeGameMode = createAsyncThunk(
+    'game/requestChangeGameMode',
+    async (args: {userId:string; gameId: string; gameType: GameTypes})  => {
+        const { userId, gameId, gameType } = args
+        const docRef = doc(db, 'games', gameId)
+        try {
+            await updateDoc(docRef, {
+                message: {
+                    type: messageType.REQUEST_CHANGE_GAME_MODE,
+                    sender: userId,
+                    data: gameType
+                }
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
+
+export const approveChangeGameMode = createAsyncThunk(
+    'game/approveChangeGameMode',
+    async (approveArgs : {id:string; gameType: GameTypes}) => {
+        const { id, gameType, } = approveArgs
+        const docRef = doc(db, 'games', id)
+        await updateDoc(docRef, {
+            boardData : games[`${gameType}`],   
+            message: {}
+        })
+    }
+)
