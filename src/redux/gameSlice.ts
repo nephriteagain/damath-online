@@ -6,7 +6,7 @@ import { boxPiece, GameState, action,  piece } from "@/types/types";
 import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
 import { kingMoveSearch } from "@/lib/gameLogic/kingMoveSearch/kingMoveSearch";
 
-import { startGame, movePiece, leaveGame } from "./gameThunks/thunks";
+import { startGame, movePiece, leaveGame, gameOver } from "./gameThunks/thunks";
 
 const initialState : GameState = {
     gameBoard: COUNTING,
@@ -37,11 +37,10 @@ export const gameSlice = createSlice({
             }
         },
         adjustPieces(state, action: action) {
-            if (
-                action.payload?.gameBoard && 
-                action?.payload?.playerTurn
-            ) {
+            if (action?.payload?.gameBoard) {
                 state.gameBoard = action.payload?.gameBoard;
+            }
+            if (action?.payload?.playerTurn) {
                 state.playerTurn = action.payload?.playerTurn
             }
         },
@@ -99,6 +98,23 @@ export const gameSlice = createSlice({
         }),
         builder.addCase(leaveGame.fulfilled, (state) => {
             state.gameOngoing = false
+        }),
+        builder.addCase(gameOver.fulfilled, (state, action) => {
+            if (action.payload) {
+                const {
+                    id, 
+                    players, 
+                    playerTurn, 
+                    boardData, 
+                    gameOngoing 
+            } = action.payload
+            
+                state.id = id,
+                state.players = players
+                state.playerTurn = playerTurn
+                state.gameBoard = boardData
+                state.gameOngoing = gameOngoing
+            }
         })
     }
 })

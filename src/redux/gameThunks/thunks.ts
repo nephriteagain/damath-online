@@ -1,15 +1,15 @@
-import { players, message, messageType, GameTypes } from './../../types/types';
+import { players, message, messageType, GameTypes, gameData } from './../../types/types';
 import { db } from "@/db/firebase"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { lobbyData } from "@/types/types"
 
-import { setDoc, doc, getDoc, updateDoc } from "firebase/firestore"
+import { setDoc, doc, getDoc, updateDoc, addDoc, collection } from "firebase/firestore"
 import { COUNTING } from "@/lib/data"
 
-import { gameData, boxPiece, piece, moveArgs} from "@/types/types"
+import {  boxPiece, piece, moveArgs} from "@/types/types"
 import { movePiece as movePieceHelper } from "@/lib/gameLogic/movePiece"
 import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces"
-
+import { generateId } from '../userSlice';
 const games = {
     'COUNTING': COUNTING
 }
@@ -100,5 +100,35 @@ export const approveRestart = createAsyncThunk(
             boardData : games[`${gameType}`],   
             message: {}
         })
+    }
+)
+
+export const gameOver = createAsyncThunk(
+    'game/gameOver',
+    async (gameArgs: gameData) => {
+        const { players, gameType } = gameArgs
+        const id = generateId()
+        const docRef = doc(db, 'games', id)
+        try {
+            await setDoc(docRef, {
+                id,
+                players: {
+                    z: players.x,
+                    x: players.z
+                },
+                playerTurn: players.z,
+                gameType,
+                boardData : games[`${gameType}`],
+                gameOngoing: true,            
+            })
+            const response = await getDoc(docRef)
+            if (!response.exists()) {
+                throw new Error('data does not exist')
+            }
+            return response.data()
+        } catch (error) {
+            console.error(error)
+        }
+        
     }
 )

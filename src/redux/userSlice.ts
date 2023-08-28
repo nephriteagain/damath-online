@@ -2,7 +2,7 @@ import { createSlice, } from "@reduxjs/toolkit";
 import {  UserTypes } from "@/types/types";
 import { createLobby, joinLobby, leaveLobby, userStartGame } from "./userThunks/thunks";
 
-function generateId() {
+export function generateId() {
     return Math.random().toString(16).slice(2)
 }
 

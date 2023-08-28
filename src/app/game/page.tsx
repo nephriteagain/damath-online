@@ -10,7 +10,7 @@ import { useAppSelector, useAppDispatch } from "@/redux/hooks"
 import { Toaster } from "@/components/ui/toaster"
 
 import { redirect } from "next/navigation" 
-import { approveRestart } from "@/redux/gameThunks/thunks"
+import { approveRestart, gameOver } from "@/redux/gameThunks/thunks"
 import { db } from "@/db/firebase"
 import { doc, onSnapshot, } from "firebase/firestore"
 import { gameData, messageType } from "@/types/types"
@@ -44,8 +44,15 @@ export default function Home() {
     const unsub = onSnapshot(docRef, snapshot => {
         if (snapshot.exists()) {
             const data = snapshot.data() as gameData
-            const { boardData, playerTurn, gameOngoing, message, gameType } = data
-            // TODO handle player leaving the game
+            const { boardData, playerTurn, gameOngoing, message, gameType, players } = data
+            if (!boardData.some(box => box?.piece?.movable === true)) {
+              toast({
+                description: `You ${playerTurn === userId ? 'Win!' : 'Lose.'}`
+              })
+              delayedDispatch(gameOver(data))
+              return
+            }
+
             if (!gameOngoing) {
                 toast({description: 'A player had left the game.'})
                 debounced()
@@ -78,7 +85,7 @@ export default function Home() {
 
             dispatch(adjustPieces({
                 gameBoard: boardData,
-                playerTurn
+                playerTurn,
             }))
         }
     })
