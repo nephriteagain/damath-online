@@ -1,4 +1,4 @@
-import { players } from './../../types/types';
+import { players, message, messageType, GameTypes } from './../../types/types';
 import { db } from "@/db/firebase"
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { lobbyData } from "@/types/types"
@@ -70,5 +70,35 @@ export const leaveGame = createAsyncThunk(
             console.error(error)
         }
         
+    }
+)
+
+export const requestRestart = createAsyncThunk(
+    'game/requestRestart',
+    async (args: {userId:string, gameId: string}) => {
+        const { userId, gameId} = args
+        const docRef = doc(db, 'games', gameId)
+        try {
+            await updateDoc(docRef, {
+                message: {
+                    type: messageType.REQUEST_RESTART,
+                    sender: userId
+                }
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+)
+
+export const approveRestart = createAsyncThunk(
+    'game/approveRestart',
+    async (approveArgs : {id:string; gameType: GameTypes.COUNTING}) => {
+        const { id, gameType, } = approveArgs
+        const docRef = doc(db, 'games', id)
+        await updateDoc(docRef, {
+            boardData : games[`${gameType}`],   
+            message: {}
+        })
     }
 )

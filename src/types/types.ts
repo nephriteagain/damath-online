@@ -80,6 +80,17 @@ export interface gameData {
     gameType: GameTypes;
     boardData: boxPiece[];
     gameOngoing: boolean;
+    message?: message
+}
+
+export interface message {
+    sender: string;
+    type: messageType
+}
+
+export enum messageType {
+    REQUEST_RESTART,
+    APPROVE_RESTART,
 }
 
 export interface moveArgs {
