@@ -1,5 +1,3 @@
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
 
 import {
     SheetClose,
@@ -9,67 +7,19 @@ import {
 } from "@/components/ui/sheet"
 
 
-import { db } from "@/db/firebase"
-import { onSnapshot, doc, } from "firebase/firestore"
 
-import { updateLobby } from "@/redux/userSlice"
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 
 import { leaveLobby } from "@/redux/userThunks/thunks"
 import { userStartGame } from "@/redux/userThunks/thunks"
-import { startGame } from "@/redux/gameThunks/thunks"
 
-import { lobbyData, lobbyDataDb } from "@/types/types"
-import { debounce } from "lodash"
-import { useToast } from "./ui/use-toast"
 
 export default function LobbySheet() {
-    const router = useRouter()
+    
 
     const dispatch = useAppDispatch()
-    const { toast } = useToast()
 
     const {id: userId, joinedLobby: lobbyId, lobbyData} = useAppSelector(state => state.user)
-
-    async function gameStartHandler(lobbyData: lobbyData) {
-        try {
-            await dispatch(startGame(lobbyData))
-            dispatch(updateLobby(undefined))
-            router.push('/game')
-            await dispatch(leaveLobby({userId, lobbyId}))
-        } catch (error) {
-            console.error(error)   
-        }
-        
-    }   
-
-    const debouncedGameStartHandler = debounce(gameStartHandler, 2000)
-
-    useEffect(() => {
-        if (!lobbyData) return
-        const docRef = doc(db, 'lobbies', lobbyId)
-        const unsub = onSnapshot(docRef, (querySnapshot) => {
-            if (querySnapshot.exists()) {
-                const data = querySnapshot.data() as lobbyDataDb;
-                const id = querySnapshot.id;
-                const newLobbyData = {...data, id}
-
-                if (data.start) {
-                    toast({title: 'Game Starting...'})
-                    debouncedGameStartHandler(newLobbyData)
-                    return
-                }
-
-                dispatch(updateLobby(newLobbyData))
-                return
-            }
-            dispatch(updateLobby(undefined))
-        })
-        return () => {
-            console.log('unsubbed to Lobby')
-            unsub()
-        }
-    }, [lobbyId])
 
     return (
         <SheetContent className="bg-slate-300">

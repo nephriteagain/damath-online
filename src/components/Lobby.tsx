@@ -1,46 +1,19 @@
-import { useEffect } from "react"
-import { db } from "@/db/firebase"
-import { onSnapshot, collection } from "firebase/firestore"
-import { getLobbies } from "@/redux/userSlice"
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 
-import { lobbyData } from "@/types/types"
 
 import CreateLobbySheet from "./CreateLobbySheet"
 import JoinLobbySheet from "./JoinLobbySheet"
 
 // TODO fix the player x not working
 export default function Lobby() {
-    const dispatch = useAppDispatch()
 
     const {
-        id : userId,
-        isLoggedIn,
         lobbies : lobbyList,
-        joinedLobby
     } = useAppSelector(state => state.user)
 
     // console.log(lobbyList)
-    useEffect(() => {
-        const colRef = collection(db, 'lobbies')
-        const unsub = onSnapshot(colRef, (querySnapshot) => {
-            const lobbyList : lobbyData[] = [];
-            querySnapshot.forEach((doc) => {
-                if (doc.exists()) {
-                    const data = doc.data()
-                    const lobbyData = {...data, id: doc.id} as lobbyData
-                    lobbyList.push(lobbyData)
-
-                }
-            })
-            dispatch(getLobbies(lobbyList))
-        })
-        return () => {
-            console.log('unsubbed to Lobbies')
-            unsub()
-        }
-
-    }, [])
+    
 
     return (
         <div className="w-[600px] h-[500px] bg-slate-500 p-4 shadow-lg drop-shadow-lg rounded-lg">
