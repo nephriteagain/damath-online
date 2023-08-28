@@ -69,6 +69,8 @@ export interface lobbyData {
 
 export enum GameTypes  {
     COUNTING = 'COUNTING',
+    WHOLE = 'WHOLE',
+    INTEGER = 'INTEGER'
 }
 
 export type lobbyDataDb = Omit<lobbyData,'id'>

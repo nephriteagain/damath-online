@@ -8,11 +8,13 @@ import {
 
 
 
+
 import { useAppDispatch, useAppSelector } from "@/redux/hooks"
 
 import { leaveLobby } from "@/redux/userThunks/thunks"
-import { userStartGame } from "@/redux/userThunks/thunks"
+import { userStartGame,  } from "@/redux/userThunks/thunks"
 
+import GameType from "./GameType"
 
 export default function LobbySheet() {
     
@@ -30,8 +32,12 @@ export default function LobbySheet() {
         </SheetHeader>
         {lobbyData != undefined && <div className="mb-4">
             <div className="mb-4">
-                <div className="font-semibold text-xl mb-2">TYPE</div>
-                <div className="ms-4 bg-zinc-600 w-fit text-white px-3 py-1 rounded-md shadow-md drop-shadow-md">{lobbyData.gameType}</div>
+                <div className="font-semibold text-xl mb-2">TYPE</div>               
+                <GameType 
+                    host={lobbyData.host}
+                    gameType={lobbyData.gameType}
+                    lobbyId={lobbyId}
+                />
             </div>
             <div className="mb-4">
                 <div className="font-semibold text-xl mb-2">HOST</div>

@@ -34,7 +34,7 @@ export default function Home() {
 
   const debouncedGameStartHandler = debounce(gameStartHandler, 2000)
 
-
+  // lobby list listener
   useEffect(() => {
     const colRef = collection(db, 'lobbies')
     const unsub = onSnapshot(colRef, (querySnapshot) => {
@@ -56,6 +56,7 @@ export default function Home() {
 
 }, [])
 
+// joined lobby listener
 useEffect(() => {
   if (!lobbyId) return
   const docRef = doc(db, 'lobbies', lobbyId)

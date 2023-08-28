@@ -4,14 +4,16 @@ import { createAsyncThunk } from "@reduxjs/toolkit"
 import { lobbyData } from "@/types/types"
 
 import { setDoc, doc, getDoc, updateDoc, addDoc, collection } from "firebase/firestore"
-import { COUNTING } from "@/lib/data"
+import { COUNTING, INTEGER, WHOLE } from "@/lib/data"
 
 import {  boxPiece, piece, moveArgs} from "@/types/types"
 import { movePiece as movePieceHelper } from "@/lib/gameLogic/movePiece"
 import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces"
 import { generateId } from '../userSlice';
 const games = {
-    'COUNTING': COUNTING
+    'COUNTING': COUNTING,
+    'WHOLE': WHOLE,
+    'INTEGER': INTEGER,
 }
 
 export const startGame = createAsyncThunk(
@@ -93,7 +95,7 @@ export const requestRestart = createAsyncThunk(
 
 export const approveRestart = createAsyncThunk(
     'game/approveRestart',
-    async (approveArgs : {id:string; gameType: GameTypes.COUNTING}) => {
+    async (approveArgs : {id:string; gameType: GameTypes}) => {
         const { id, gameType, } = approveArgs
         const docRef = doc(db, 'games', id)
         await updateDoc(docRef, {
