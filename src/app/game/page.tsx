@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 
 
 import GameArea from "@/components/GameArea"
@@ -18,12 +18,17 @@ import { useToast } from "@/components/ui/use-toast"
 import { debounce } from "lodash"
 import { playerLeft, adjustPieces } from "@/redux/gameSlice"
 import { ToastAction } from "@radix-ui/react-toast"
+import { boardStyleFlip, titleTurnChanger } from "@/lib/styleHelpers"
 export default function Home() {
   const [ openRules, setOpenRules ] = useState(false)
   const { id, } = useAppSelector(state => state.game)
   const { id: userId } = useAppSelector(state => state.user)
   const { toast } = useToast()  
   const dispatch = useAppDispatch()
+
+  const boardRef = useRef<HTMLDivElement>(null)
+
+
   if (!id) {
     redirect('/')
   }
@@ -46,11 +51,16 @@ export default function Home() {
         if (snapshot.exists()) {
             const data = snapshot.data() as gameData
             const { boardData, playerTurn, gameOngoing, message, gameType, players } = data
-            if (playerTurn === userId) {
-              document.title = 'your turn'
-            } else {
-              document.title = "opponent's turn"
+
+            titleTurnChanger(playerTurn, userId)
+
+            if (userId === players.x) {
+              const board = boardRef.current as HTMLDivElement;              
+              const verticalNum = document.querySelector('.vertical-num') as HTMLDivElement
+              const horizontalNum = document.querySelector('.horizontal-num') as HTMLDivElement            
+              boardStyleFlip(board, horizontalNum, verticalNum)
             }
+
             if (!boardData.some(box => box?.piece?.movable === true)) {
               toast({
                 description: `You ${playerTurn === userId ? 'Win!' : 'Lose.'}`
@@ -141,10 +151,10 @@ export default function Home() {
   return (
     // temporary style
     <main className="flex items-center justify-center w-[100vw] h-[100vh] relative">
-      <GameArea />
+      <GameArea  ref={boardRef}/>
       { openRules && <Rules
         openRules={openRules}
-        setOpenRules={setOpenRules}
+        setOpenRules={setOpenRules}        
         /> }
       <Settings 
         showRules={showRules}
