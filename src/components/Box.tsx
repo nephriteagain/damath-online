@@ -33,7 +33,7 @@ export default function Box({playable, piece, operation, index, highlighted}: Bo
             piece: pieceToMove,
             index, 
             pieceIndex,
-            nextTurn: playerTurn === players?.x ? players?.z : players?.x,
+            playerTurn,
             id,
             players
         } as moveArgs))

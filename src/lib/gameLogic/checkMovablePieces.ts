@@ -4,7 +4,8 @@ import { toAdd } from "./kingMoveSearch/kingMoveSearch";
 
 export function checkMovablePieces(
     boardData: boxPiece[],
-    playerToCheck: 'x'|'z'
+    playerToCheck: 'x'|'z',
+    didCapturedAPiece: boolean
 ) : boxPiece[] {
     const boardCopy = cloneDeep(boardData).map(box => {
         if (box?.piece) {
@@ -18,26 +19,48 @@ export function checkMovablePieces(
         }
         return box
     })
+
     
-    const boardCopyWithJumps = boardCopy.map((box,index) => {
+    let boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
-            if (box.piece.king && box.piece.type === playerToCheck) {
+            if (box.piece.king ) {
                 kingJumpable(boardCopy, box.piece, index, -7)
                 kingJumpable(boardCopy, box.piece, index, -9)
                 kingJumpable(boardCopy, box.piece, index, 7)
                 kingJumpable(boardCopy, box.piece, index, 9)
             }
-            if (!box.piece.king && box.piece.type === playerToCheck) {
+            if (!box.piece.king ) {
                 movableJump(boardCopy, index, box.piece)
             }
             return box
         }
         return box
     })
+    if (didCapturedAPiece) {
+        const canMultiJump = boardCopyWithJumps.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
+        if (canMultiJump) {
+            boardCopyWithJumps.map(box => {
+                if (box?.piece?.type === playerToCheck) {
+                    box.piece.movable = false
+                    return box
+                }
+                return box
+            })
+        }
+    } else {
+        boardCopyWithJumps.map(box => {
+            if (box?.piece && box?.piece?.type !== playerToCheck) {
+                box.piece.movable = false
+                return box
+            }
+            return box
+        })
+    }
+    
 
     // check if there is a force jumps,
     // if there is skip checking for moves
-    if (boardCopyWithJumps.some(box => box?.piece?.movable == true)) {
+    if (boardCopyWithJumps.some(box => box?.piece?.movable)) {
         return boardCopyWithJumps
     }
 

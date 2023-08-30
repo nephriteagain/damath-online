@@ -103,7 +103,7 @@ export interface moveArgs {
     piece : piece,
     index : number,
     pieceIndex : number,
-    nextTurn : string,
+    playerTurn : string,
     id: string,
     players: players
 }

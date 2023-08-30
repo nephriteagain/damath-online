@@ -42,16 +42,35 @@ export const startGame = createAsyncThunk(
 )
 
 
+function pieceCount(board: boxPiece[]) : number {
+    let count = 0
+    board.forEach(box => {
+        if (box?.piece) {
+            count++
+        }
+    })
+    return count
+}
 
 export const movePiece = createAsyncThunk(
     'game/move',
     async (moveArgs: moveArgs) => {
-        const { boardData, piece, index, pieceIndex, nextTurn, id, players } = moveArgs
+        const { boardData, piece, index, pieceIndex, playerTurn , id, players } = moveArgs
         const docRef = doc(db, 'games', id)
+        let nextTurn = playerTurn === players?.x ? players?.z : players?.x
+
 
         const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex)
         const playerToCheck = players.x === nextTurn ? 'x' : 'z'
-        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck)
+
+        const didCapturedAPiece = pieceCount(boardData) > pieceCount(newBoardData)
+        console.log(didCapturedAPiece, 'didcaptureapiece')
+        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck, didCapturedAPiece)
+        const canMultiJump = boardDataWithNewMoves.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
+        if (canMultiJump && didCapturedAPiece) {
+            console.log('can multi jump')
+            nextTurn = playerTurn === players?.z ? players?.z : players?.x
+        }
         await updateDoc(docRef, {
             playerTurn: nextTurn,
             boardData: boardDataWithNewMoves

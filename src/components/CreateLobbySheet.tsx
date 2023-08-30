@@ -26,7 +26,7 @@ import {
 
     useEffect(() => {
        const el = dataRef.current as HTMLDivElement
-       el.innerText = id
+       el.innerText = `your id: ${id}`
     }, [])
 
     return (

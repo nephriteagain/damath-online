@@ -58,6 +58,7 @@ export default function Home() {
 
 // joined lobby listener
 useEffect(() => {
+  document.title = 'damath-online'
   if (!lobbyId) return
   const docRef = doc(db, 'lobbies', lobbyId)
   const unsub = onSnapshot(docRef, (querySnapshot) => {

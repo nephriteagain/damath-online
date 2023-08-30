@@ -32,6 +32,7 @@ export default function Home() {
     setOpenRules((rule) => !rule)
   }
 
+
   async function handleDelay() {
     dispatch(playerLeft())
   } 
@@ -45,6 +46,11 @@ export default function Home() {
         if (snapshot.exists()) {
             const data = snapshot.data() as gameData
             const { boardData, playerTurn, gameOngoing, message, gameType, players } = data
+            if (playerTurn === userId) {
+              document.title = 'your turn'
+            } else {
+              document.title = "opponent's turn"
+            }
             if (!boardData.some(box => box?.piece?.movable === true)) {
               toast({
                 description: `You ${playerTurn === userId ? 'Win!' : 'Lose.'}`
@@ -58,6 +64,20 @@ export default function Home() {
                 debounced()
                 return
             }
+            if (message?.type === messageType.APPROVE_RESTART) {
+              toast({
+                description: 'restart request approved, restarting game...',
+                duration: 3000,
+              })
+            }
+
+            if (message?.type === messageType.APPROVE_CHANGE_GAME_MODE) {
+              toast({
+                description: 'change game mode request approved, restarting game...',
+                duration: 3000,
+              })
+            }
+
             if (message?.type === messageType.REQUEST_RESTART) {
               if (message.sender === userId) {
                 toast({
@@ -94,12 +114,8 @@ export default function Home() {
                   description: 'a player is requesting to change game mode, click to approve',
                   duration: 10000,
                   action: <ToastAction altText="APPROVE" 
-                  onClick={() => {
-                    toast({
-                      description: 'change game mode request approved, restarting game...',
-                      duration: 3000
-                    })
-                    delayedDispatch(approveChangeGameMode({id, gameType: message?.data || gameType }))}
+                  onClick={() => {                    
+                    dispatch(approveChangeGameMode({id, gameType: message?.data || gameType }))}
                   }
                   >
                     APPROVE
@@ -119,6 +135,8 @@ export default function Home() {
         unsub()
     }
 }, [id])
+
+
 
   return (
     // temporary style
