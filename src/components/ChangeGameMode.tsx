@@ -51,7 +51,7 @@ export default function ChangeGameMode() {
     return (
         <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="default">Change Game Mode</Button>
+        <Button variant="default" className="max-w-[200px] hover:scale-105 active:scale-95 transition-all duration-150">Change Game Mode</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
