@@ -1,5 +1,9 @@
 import { cloneDeep } from 'lodash';
-import { piece, boxPiece } from '@/types/types';
+import { piece, boxPiece, } from '@/types/types';
+
+/** 
+ * @description for regular pieces, check the available move the selected piece
+ */
 export function regularMoveSearch(
     boardData: boxPiece[],
     piece: piece,
@@ -31,7 +35,10 @@ export function regularMoveSearch(
 }
 
 
-
+/** 
+ * @description for regular pieces, check the available jumps the selected piece,
+ * jumps means a piece can capture another piece
+ */
 function jumps(
     boardData: boxPiece[],
     piece: piece,
@@ -97,6 +104,10 @@ function jumps(
     return [boardCopy, hasChanges]
 }
 
+/**
+ * @description for pieces with type === 'z', check if the piece has available moves,
+ * @description NOTE: regular pieces can only move forward but can jump backwards
+ */
 function moveZ(
     boardData: boxPiece[],
     index: number
@@ -117,6 +128,10 @@ function moveZ(
     
 }
 
+/**
+ * @description for pieces with type === 'x', check if the piece has available moves,
+ * @description NOTE: regular pieces can only move forward but can jump backwards
+ */
 function moveX(
     boardData: boxPiece[],
     index: number

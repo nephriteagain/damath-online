@@ -16,6 +16,10 @@ const games = {
     'INTEGER': INTEGER,
 }
 
+/**
+ * @description creates a new document in the "games" collection
+ * which will be listening to
+ */
 export const startGame = createAsyncThunk(
     'game/start',
     async (lobbyData: lobbyData) => {
@@ -41,7 +45,9 @@ export const startGame = createAsyncThunk(
     }
 )
 
-
+/**
+ * @description count all the pieces currently on the param board
+ */
 function pieceCount(board: boxPiece[]) : number {
     let count = 0
     board.forEach(box => {
@@ -52,6 +58,9 @@ function pieceCount(board: boxPiece[]) : number {
     return count
 }
 
+/**
+ * @description is the thunk that will write the new game state in the db
+ */
 export const movePiece = createAsyncThunk(
     'game/move',
     async (moveArgs: moveArgs) => {
@@ -79,6 +88,9 @@ export const movePiece = createAsyncThunk(
     }    
 )
 
+/**
+ * @description will trigger the stop to the listener in the current game document
+ */
 export const leaveGame = createAsyncThunk(
     'game/leave',
     async (gameId: string) => {
@@ -93,6 +105,7 @@ export const leaveGame = createAsyncThunk(
         
     }
 )
+
 
 export const requestRestart = createAsyncThunk(
     'game/requestRestart',

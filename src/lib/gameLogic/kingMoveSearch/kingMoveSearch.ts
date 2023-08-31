@@ -1,6 +1,9 @@
 import { boxPiece, piece } from '@/types/types';
 import { cloneDeep } from 'lodash';
 
+/**
+ * @description for king pieces only, checks all the available moves or jump the selected piece can make
+ */
 export function kingMoveSearch(
     boardData: boxPiece[],
     piece: piece,
@@ -29,6 +32,13 @@ export function kingMoveSearch(
     return boardCopy
 }
 
+/**
+ * @description helper function for move searching, determines the direction of the move or jump,
+ * @description divisible by -7 is top right
+ * @description divisible by -9 is top left,
+ * @description divisible by 7 is bot left
+ * @description divisible by 9 is bot right
+ */
 export function toAdd(number:number) : number {
     if (number % 7 === 0) {
         if (number > 0) {
@@ -44,6 +54,9 @@ export function toAdd(number:number) : number {
     }
 }
 
+/**
+ * @description for king pieces, checks all the available moves a piece can make
+ */
 function kingMove(
     boardData: boxPiece[],
     index: number,
@@ -59,6 +72,9 @@ function kingMove(
     }
 }
 
+/**
+ * @description for king pieces, checks all the available jumps a piece can make
+ */
 function kingJump(
     boardData: boxPiece[],
     piece: piece,

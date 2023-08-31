@@ -1,8 +1,11 @@
 import { cloneDeep } from 'lodash';
 import { boxPiece, piece } from "@/types/types";
 
-import { POSSIBLEJUMPS, POSSIBLEJUMPSTYPE } from '../data';
+import { POSSIBLEJUMPS } from '../data';
 
+/**
+ * @description moves the selected piece to its new position
+ */
 export function movePiece(
     boardData: boxPiece[],
     piece: piece, 
@@ -33,12 +36,17 @@ export function movePiece(
     })
     if (piece.king) {
         const boardCopyWithoutCaptured = removeCapturedAsKing(boardCopy, index, pieceIndex)
+        return boardCopyWithoutCaptured
     }
     const boardCopyWithoutCaptured = removeCaptured(boardCopy, index, pieceIndex)
 
     return boardCopyWithoutCaptured
 }
 
+/**
+ * @description for regular pieces only, checks if the move made is a jump or a move,
+ * if it's a jump, remove the captured piece
+ */
 function removeCaptured(
     boardData: boxPiece[], 
     index: number, 
@@ -59,6 +67,10 @@ function removeCaptured(
     return boardCopy
 }
 
+/**
+ * @description for king pieces only, checks if the move made is a jump or a move,
+ * if it's a jump, remove the captured piece
+ */
 function removeCapturedAsKing(
     boardData: boxPiece[], 
     index: number, 

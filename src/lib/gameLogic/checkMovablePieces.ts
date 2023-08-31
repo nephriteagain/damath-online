@@ -2,6 +2,9 @@ import { boxPiece, piece, players } from "@/types/types";
 import { cloneDeep,  } from "lodash";
 import { toAdd } from "./kingMoveSearch/kingMoveSearch";
 
+/**
+ * @description check the boards's each pieces their current movability
+ */
 export function checkMovablePieces(
     boardData: boxPiece[],
     playerToCheck: 'x'|'z',
@@ -20,14 +23,10 @@ export function checkMovablePieces(
         return box
     })
 
-    
     let boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
             if (box.piece.king ) {
-                kingJumpable(boardCopy, box.piece, index, -7)
-                kingJumpable(boardCopy, box.piece, index, -9)
-                kingJumpable(boardCopy, box.piece, index, 7)
-                kingJumpable(boardCopy, box.piece, index, 9)
+                kingJumpableAllDirections(boardCopy, box.piece, index)                
             }
             if (!box.piece.king ) {
                 movableJump(boardCopy, index, box.piece)
@@ -55,6 +54,10 @@ export function checkMovablePieces(
             }
             return box
         })
+        // TODO: add force eat here
+        // this has a bug, fix it
+        // const movablePieces = getAllMovablePieces(boardCopyWithJumps)
+        // boardCopyWithJumps = kingJumpableMultiple(boardData, movablePieces)
     }
     
 
@@ -67,10 +70,7 @@ export function checkMovablePieces(
     const boardCopyWithMoves = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
             if (box.piece.king && box.piece.type === playerToCheck) {
-                kingMovable(boardCopy, box.piece, index, -7)
-                kingMovable(boardCopy, box.piece, index, -9)
-                kingMovable(boardCopy, box.piece, index, 7)
-                kingMovable(boardCopy, box.piece, index, 9)
+                kingMovableAllDirections(boardCopy, box.piece, index)
             }
             if (!box.piece.king && box.piece.type === playerToCheck) {
                 movable(boardCopy, index, box.piece)
@@ -82,7 +82,9 @@ export function checkMovablePieces(
     
 }
 
-
+/**
+ * @description for king pieces only, check if the piece is movable
+ */
 function kingMovable(
     boardData: boxPiece[],
     piece: piece,
@@ -97,6 +99,10 @@ function kingMovable(
     }
 }
 
+
+/**
+ * @description for king pieces only, if the pieces can capture another piece
+ */
 function kingJumpable(
     boardData: boxPiece[],
     piece: piece,
@@ -120,6 +126,37 @@ function kingJumpable(
     }
 }
 
+/**
+ * @description invokes kingJumpable in all directions
+ */
+function kingJumpableAllDirections(
+    boardData: boxPiece[],
+    piece: piece,
+    index: number,
+) {
+    kingJumpable(boardData, piece, index, -7)
+    kingJumpable(boardData, piece, index, -9)
+    kingJumpable(boardData, piece, index, 7)
+    kingJumpable(boardData, piece, index, 9)
+}
+
+/**
+ * @description invokes kingMovable in all directions
+ */
+function kingMovableAllDirections(
+    boardData: boxPiece[],
+    piece: piece,
+    index: number,
+) {
+    kingMovable(boardData, piece, index, -7)
+    kingMovable(boardData, piece, index, -9)
+    kingMovable(boardData, piece, index, 7)
+    kingMovable(boardData, piece, index, 9)
+}
+
+/**
+ * @description for regular piece only, check if the piece can capture another piece
+ */
 function movableJump(
     boardData: boxPiece[],
     index: number,
@@ -176,6 +213,9 @@ function movableJump(
 
 }
 
+/**
+ * @description for regular pieces only, check if the piece is movable
+ */
 function movable(
     boardData: boxPiece[],
     index: number,
@@ -208,3 +248,53 @@ function movable(
     
 }
 
+type MovablePieces = {
+    index: number;
+    piece: piece;
+}
+
+function getAllMovablePieces(
+    boarData: boxPiece[]) : MovablePieces[] {
+    const movablePieces : MovablePieces[] = [];
+    boarData.forEach((box, index) => {
+        if (box?.piece?.movable) {
+            movablePieces.push({index, piece: box.piece})
+        }
+    })
+    return movablePieces
+}
+
+/**
+ * @description recursively check if there is a piece that can take
+ * more than one piece, if there is, only make that piece movable.
+ * this should only run when there is a change of turns
+ * @example if there is one piece that can take one piece and another that can take two, 
+ * only the latter piece will be movable,
+ * this is according to the rules of DaMath
+ * @example there are two pieces that can take potentially two piece,
+ * this will make them both movable
+ * @example if there is a piece that can take 1 piece,
+ * and another that can take 2 piece,
+ * and another that can take 3 piece,
+ * only the latter will be movable
+ */
+function kingJumpableMultiple(
+    boardData: boxPiece[],
+    movablePieces: MovablePieces[],
+) : boxPiece[] {
+    const boardCopy = cloneDeep(boardData)
+    boardCopy.forEach(box => {
+        if (box?.piece?.movable) {
+            box.piece.movable = false
+        }
+    })
+    movablePieces.forEach(({index, piece}) => {
+        kingJumpableAllDirections(boardCopy, piece, index)
+    })
+    const hasMovable = boardCopy.some(box => box?.piece?.movable)
+    if (hasMovable) {
+        const newMovablePieces = getAllMovablePieces(boardCopy)
+        return kingJumpableMultiple(boardCopy, newMovablePieces)
+    }
+    return boardData
+}
