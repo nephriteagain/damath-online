@@ -7,6 +7,7 @@ export interface GameState {
     id?: string;
     players?: players;
     playerTurn?: string;
+    score?: score
 }
 
 export interface players {
@@ -82,7 +83,13 @@ export interface gameData {
     gameType: GameTypes;
     boardData: boxPiece[];
     gameOngoing: boolean;
+    score: score
     message?: message
+}
+
+export interface score {
+    z: number;
+    x: number;
 }
 
 export interface message {
@@ -105,5 +112,6 @@ export interface moveArgs {
     pieceIndex : number,
     playerTurn : string,
     id: string,
-    players: players
+    players: players,
+    score: score
 }

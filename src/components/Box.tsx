@@ -22,7 +22,7 @@ interface BoxProps {
 export default function Box({playable, piece, operation, index, highlighted}: BoxProps) {
     const dispatch = useAppDispatch()
 
-    const {gameBoard, pieceToMove, pieceIndex, id, players, playerTurn} = useAppSelector(state => state.game)
+    const {gameBoard, pieceToMove, pieceIndex, id, players, playerTurn, score} = useAppSelector(state => state.game)
     function handleClick(e: MouseEvent, index: number) {
         e.preventDefault();
         e.stopPropagation();
@@ -35,7 +35,8 @@ export default function Box({playable, piece, operation, index, highlighted}: Bo
             pieceIndex,
             playerTurn,
             id,
-            players
+            players,
+            score
         } as moveArgs))
     }
 

@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 import { COUNTING } from "@/lib/data";
-import { boxPiece, GameState, action,  piece } from "@/types/types";
+import { boxPiece, GameState, action,  piece, score } from "@/types/types";
 
 import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
 import { kingMoveSearch } from "@/lib/gameLogic/kingMoveSearch/kingMoveSearch";
@@ -53,6 +53,10 @@ export const gameSlice = createSlice({
             state.players = undefined;
             state.playerTurn = undefined;
             
+        },
+        updateScore(state, action) {
+            const score = action.payload as score;
+            state.score = score
         }
         // movePiece(state: GameState, action: action) {            
             
@@ -95,7 +99,7 @@ export const gameSlice = createSlice({
         builder.addCase(movePiece.fulfilled, (state) => {
             state.pieceToMove = null;
             state.pieceIndex = -1
-        }),
+        })
         builder.addCase(leaveGame.fulfilled, (state) => {
             state.gameOngoing = false
         }),
@@ -119,6 +123,6 @@ export const gameSlice = createSlice({
     }
 })
 
-export const { hightlightMoves, adjustPieces, playerLeft } = gameSlice.actions
+export const { hightlightMoves, adjustPieces, playerLeft, updateScore } = gameSlice.actions
 
 export default gameSlice.reducer

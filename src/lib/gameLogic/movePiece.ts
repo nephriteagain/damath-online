@@ -10,7 +10,8 @@ export function movePiece(
     boardData: boxPiece[],
     piece: piece, 
     index:number,
-    pieceIndex: number
+    pieceIndex: number,
+    capturedArr: piece[] // i need this to get the capture piece
 ) : boxPiece[] {
     const boardCopy = cloneDeep(boardData).map((box,idx) => {
         if (idx === pieceIndex) {
@@ -35,10 +36,10 @@ export function movePiece(
         return box
     })
     if (piece.king) {
-        const boardCopyWithoutCaptured = removeCapturedAsKing(boardCopy, index, pieceIndex)
+        const boardCopyWithoutCaptured = removeCapturedAsKing(boardCopy, index, pieceIndex, capturedArr)
         return boardCopyWithoutCaptured
     }
-    const boardCopyWithoutCaptured = removeCaptured(boardCopy, index, pieceIndex)
+    const boardCopyWithoutCaptured = removeCaptured(boardCopy, index, pieceIndex, capturedArr)
 
     return boardCopyWithoutCaptured
 }
@@ -50,7 +51,8 @@ export function movePiece(
 function removeCaptured(
     boardData: boxPiece[], 
     index: number, 
-    pieceIndex: number
+    pieceIndex: number,
+    captureArr: piece[]
 ) : boxPiece[] {
     const boardCopy = cloneDeep(boardData)
 
@@ -58,9 +60,17 @@ function removeCaptured(
     const lower = Math.min(index, pieceIndex)
 
     if (higher - lower === 14) {
+        if (boardCopy[higher-7]?.piece && captureArr[0] == undefined) {
+            const copy = cloneDeep(boardCopy[higher-7].piece) as piece
+            captureArr[0] = copy
+        }
         delete boardCopy[higher-7]?.piece
     }
     if (higher - lower === 18) {
+        if (boardCopy[higher-9]?.piece && captureArr[0] == undefined) {
+            const copy = cloneDeep(boardCopy[higher-9].piece) as piece
+            captureArr[0] = copy
+        }
         delete boardCopy[higher-9]?.piece
     }
 
@@ -74,7 +84,8 @@ function removeCaptured(
 function removeCapturedAsKing(
     boardData: boxPiece[], 
     index: number, 
-    pieceIndex: number
+    pieceIndex: number,
+    captureArr: piece[]
 ) : boxPiece[] {
 
     const boardCopy = cloneDeep(boardData)
@@ -87,6 +98,10 @@ function removeCapturedAsKing(
     if (array) {
         array.forEach((num) => {
             if (num > lower && num < higher) {
+                if ( (boardCopy[num]?.piece && captureArr[0] == undefined)) {
+                    const copy = cloneDeep(boardCopy[num].piece) as piece
+                    captureArr[0] = copy
+                }
                 delete boardCopy[num].piece
             }
         })

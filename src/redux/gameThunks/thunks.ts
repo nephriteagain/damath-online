@@ -10,6 +10,8 @@ import {  boxPiece, piece, moveArgs} from "@/types/types"
 import { movePiece as movePieceHelper } from "@/lib/gameLogic/movePiece"
 import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces"
 import { generateId } from '../userSlice';
+import { scoreHandler, getNewPieceBox,  } from '@/lib/gameLogic/scoreHandler';
+import { cloneDeep } from 'lodash';
 const games = {
     'COUNTING': COUNTING,
     'WHOLE': WHOLE,
@@ -34,6 +36,10 @@ export const startGame = createAsyncThunk(
             gameType,
             boardData : games[`${gameType}`],
             gameOngoing: true,
+            score: {
+                z: 0,
+                x: 0
+            }
          }
          const docRef = doc(db, 'games', id)
          await setDoc(docRef, data)
@@ -64,27 +70,46 @@ function pieceCount(board: boxPiece[]) : number {
 export const movePiece = createAsyncThunk(
     'game/move',
     async (moveArgs: moveArgs) => {
-        const { boardData, piece, index, pieceIndex, playerTurn , id, players } = moveArgs
-        const docRef = doc(db, 'games', id)
+        const { boardData, piece, index, pieceIndex, playerTurn , id, players, score } = moveArgs        
         let nextTurn = playerTurn === players?.x ? players?.z : players?.x
+        const oldBoard = cloneDeep(boardData)
 
+        const capturedPieceArr : piece[] = []
 
-        const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex)
+        const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex, capturedPieceArr)
         const playerToCheck = players.x === nextTurn ? 'x' : 'z'
 
         const didCapturedAPiece = pieceCount(boardData) > pieceCount(newBoardData)
+
+        
         console.log(didCapturedAPiece, 'didcaptureapiece')
         const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck, didCapturedAPiece)
         const canMultiJump = boardDataWithNewMoves.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
+        
+        let newScore = score
+        if (didCapturedAPiece) {
+            const capturedPiece = capturedPieceArr[0]
+            const newPieceBox = getNewPieceBox(boardDataWithNewMoves, piece)
+            const scoree = players.x === nextTurn ? 'z' : 'x'
+            newScore = scoreHandler(score, scoree, piece, capturedPiece, newPieceBox)
+        }
+
         if (canMultiJump && didCapturedAPiece) {
             console.log('can multi jump')
             nextTurn = playerTurn === players?.z ? players?.z : players?.x
         }
-        await updateDoc(docRef, {
-            playerTurn: nextTurn,
-            boardData: boardDataWithNewMoves
-        })
-        return
+
+        try {
+            const docRef = doc(db, 'games', id)
+            await updateDoc(docRef, {
+                playerTurn: nextTurn,
+                boardData: boardDataWithNewMoves,
+                score: newScore
+            })
+            return
+        } catch (error) {
+            console.error(error)
+        }        
     }    
 )
 

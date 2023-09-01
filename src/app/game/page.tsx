@@ -16,7 +16,7 @@ import { doc, onSnapshot, } from "firebase/firestore"
 import { gameData, messageType } from "@/types/types"
 import { useToast } from "@/components/ui/use-toast"
 import { debounce } from "lodash"
-import { playerLeft, adjustPieces } from "@/redux/gameSlice"
+import { playerLeft, adjustPieces, updateScore } from "@/redux/gameSlice"
 import { ToastAction } from "@radix-ui/react-toast"
 import { boardStyleFlip, titleTurnChanger } from "@/lib/styleHelpers"
 export default function Home() {
@@ -50,9 +50,10 @@ export default function Home() {
     const unsub = onSnapshot(docRef, snapshot => {
         if (snapshot.exists()) {
             const data = snapshot.data() as gameData
-            const { boardData, playerTurn, gameOngoing, message, gameType, players } = data
+            const { boardData, playerTurn, gameOngoing, message, gameType, players, score } = data
 
             titleTurnChanger(playerTurn, userId)
+            dispatch(updateScore(score))
 
             if (userId === players.x) {
               const board = boardRef.current as HTMLDivElement;              

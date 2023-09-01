@@ -32,8 +32,9 @@ import {
     return (
         <Sheet>
             { joinedLobby.length === 0 ?
-            <SheetTrigger className="bg-green-300 px-3 py-1 text-lg font-semibold rounded-md shadow-md drop-shadow-md hover:scale-105 active:scale-95 transition-all duration-150"
+            <SheetTrigger className="bg-green-300 px-3 py-1 text-lg font-semibold rounded-md shadow-md drop-shadow-md hover:scale-105 active:scale-95 transition-all duration-150 disabled:opacity-70"
             onClick={handleClick}
+            disabled={id.length === 0}
             > 
                 Create Lobby
             </SheetTrigger> :
