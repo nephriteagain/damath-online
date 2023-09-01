@@ -19,6 +19,7 @@ import { debounce } from "lodash"
 import { playerLeft, adjustPieces, updateScore } from "@/redux/gameSlice"
 import { ToastAction } from "@radix-ui/react-toast"
 import { boardStyleFlip, titleTurnChanger } from "@/lib/styleHelpers"
+import { getTotalRemainingScore } from "@/lib/gameLogic/scoreHandler"
 export default function Home() {
   const [ openRules, setOpenRules ] = useState(false)
   const { id, } = useAppSelector(state => state.game)
@@ -63,9 +64,25 @@ export default function Home() {
             }
 
             if (!boardData.some(box => box?.piece?.movable === true)) {
-              toast({
-                description: `You ${playerTurn === userId ? 'Win!' : 'Lose.'}`
-              })
+              const totalScores = {...score}
+              totalScores.x += getTotalRemainingScore('x', boardData)
+              totalScores.z += getTotalRemainingScore('z', boardData)
+              if (totalScores.z > totalScores.x) {
+                toast({
+                  description: "Red Win!"
+                })
+              }
+              if (totalScores.z < totalScores.x) {
+                toast({
+                  description: "Blue Win!"
+                })
+              }
+              else {
+                toast({
+                  description: "Draw!"
+                })
+              }
+              dispatch(updateScore(totalScores))
               delayedDispatch(gameOver(data))
               return
             }

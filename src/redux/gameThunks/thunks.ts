@@ -178,7 +178,11 @@ export const gameOver = createAsyncThunk(
                 playerTurn: players.z,
                 gameType,
                 boardData : games[`${gameType}`],
-                gameOngoing: true,            
+                gameOngoing: true,   
+                score: {
+                    z: 0,
+                    x: 0
+                }         
             })
             const response = await getDoc(docRef)
             if (!response.exists()) {

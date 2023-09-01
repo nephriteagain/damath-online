@@ -57,3 +57,15 @@ export function getNewPieceBox(boardData: boxPiece[], piece: piece) : boxPiece {
     }) as boxPiece
     return newPieceBox
 }
+
+export function getTotalRemainingScore(pieceType: 'x'|'z', boardData: boxPiece[]) : number {
+    let total = 0
+    
+    for (let i = 0; i < boardData.length; i++) {
+        if (boardData[i]?.piece?.type === pieceType) {
+            const val = boardData[i]?.piece?.value as number
+            total+=val
+        }
+    }
+    return total
+}
