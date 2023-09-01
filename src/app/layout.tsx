@@ -10,10 +10,6 @@ import { store } from '@/redux/store'
 
 const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: 'Damath Online',
-  description: 'Online Damath Game',
-}
 
 export default function RootLayout({
   children,
