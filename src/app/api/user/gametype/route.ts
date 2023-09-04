@@ -8,6 +8,7 @@ export async function POST(req: Request) {
         return NextResponse.json({error: 'no lobbyId or gameType'}, {status: 400})
     }
     try {
+        
         const docRef = doc(db, 'lobbies', lobbyId)
         await updateDoc(docRef, {
             gameType

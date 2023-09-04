@@ -26,28 +26,12 @@ export const startGame = createAsyncThunk(
     'game/start',
     async (lobbyData: lobbyData) => {
         const { id, gameType, guest, host } = lobbyData
-         const data = {
-            id,
-            players: {
-                z: host,
-                x: guest
-            },
-            playerTurn: host,
-            gameType,
-            boardData : games[`${gameType}`],
-            gameOngoing: true,
-            score: {
-                z: 0,
-                x: 0
-            }
-         }
-         const docRef = doc(db, 'games', id)
-         await setDoc(docRef, data)
-         const docSnap = await getDoc(docRef)
-         if (docSnap.exists()) {
-            const data = docSnap.data() as gameData
-            return data
-         }
+        const res = await fetch('/api/game/start', {
+            method: 'POST',
+            body: JSON.stringify({id, gameType, guest, host})
+        })
+        const data = await res.json()
+        return data        
     }
 )
 
@@ -71,45 +55,12 @@ export const movePiece = createAsyncThunk(
     'game/move',
     async (moveArgs: moveArgs) => {
         const { boardData, piece, index, pieceIndex, playerTurn , id, players, score } = moveArgs        
-        let nextTurn = playerTurn === players?.x ? players?.z : players?.x
-        const oldBoard = cloneDeep(boardData)
-
-        const capturedPieceArr : piece[] = []
-
-        const newBoardData = movePieceHelper(boardData, piece, index, pieceIndex, capturedPieceArr)
-        const playerToCheck = players.x === nextTurn ? 'x' : 'z'
-
-        const didCapturedAPiece = pieceCount(boardData) > pieceCount(newBoardData)
-
-        
-        console.log(didCapturedAPiece, 'didcaptureapiece')
-        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck, didCapturedAPiece)
-        const canMultiJump = boardDataWithNewMoves.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
-        
-        let newScore = score
-        if (didCapturedAPiece) {
-            const capturedPiece = capturedPieceArr[0]
-            const newPieceBox = getNewPieceBox(boardDataWithNewMoves, piece)
-            const scoree = players.x === nextTurn ? 'z' : 'x'
-            newScore = scoreHandler(score, scoree, piece, capturedPiece, newPieceBox)
-        }
-
-        if (canMultiJump && didCapturedAPiece) {
-            console.log('can multi jump')
-            nextTurn = playerTurn === players?.z ? players?.z : players?.x
-        }
-
-        try {
-            const docRef = doc(db, 'games', id)
-            await updateDoc(docRef, {
-                playerTurn: nextTurn,
-                boardData: boardDataWithNewMoves,
-                score: newScore
-            })
-            return
-        } catch (error) {
-            console.error(error)
-        }        
+        const res = await fetch('/api/game/move', {
+            method: 'POST',
+            body: JSON.stringify({boardData, piece, index, pieceIndex, playerTurn , id, players, score})
+        })
+        const data = await res.json()
+        return data
     }    
 )
 
@@ -119,15 +70,12 @@ export const movePiece = createAsyncThunk(
 export const leaveGame = createAsyncThunk(
     'game/leave',
     async (gameId: string) => {
-        const docRef = doc(db, 'games', gameId)
-        try {
-            await updateDoc(docRef, {
-                gameOngoing: false
-            })
-        } catch (error) {
-            console.error(error)
-        }
-        
+        const res = await fetch('/api/game/leave', {
+            method: 'POST',
+            body: JSON.stringify({gameId})
+        })
+        const data = await res.json()
+        return data    
     }
 )
 
@@ -166,33 +114,12 @@ export const gameOver = createAsyncThunk(
     'game/gameOver',
     async (gameArgs: gameData) => {
         const { players, gameType } = gameArgs
-        const id = generateId()
-        const docRef = doc(db, 'games', id)
-        try {
-            await setDoc(docRef, {
-                id,
-                players: {
-                    z: players.x,
-                    x: players.z
-                },
-                playerTurn: players.z,
-                gameType,
-                boardData : games[`${gameType}`],
-                gameOngoing: true,   
-                score: {
-                    z: 0,
-                    x: 0
-                }         
-            })
-            const response = await getDoc(docRef)
-            if (!response.exists()) {
-                throw new Error('data does not exist')
-            }
-            return response.data()
-        } catch (error) {
-            console.error(error)
-        }
-        
+        const res = await fetch('/api/game/gameover', {
+            method: 'POST',
+            body: JSON.stringify({players, gameType})
+        })
+        const data = await res.json()
+        return data
     }
 )
 

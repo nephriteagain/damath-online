@@ -7,7 +7,6 @@ export function scoreHandler(
     capturePiece: piece,
     destinationBox: boxPiece
 ) : score {
-    console.log('score handler func')
     const operation = destinationBox?.operation as operation
     const jumpVal = jumpedPiece.value 
     const capturedVal = capturePiece.value
