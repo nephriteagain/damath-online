@@ -7,29 +7,24 @@ import { GameTypes, lobbyDataDb } from "@/types/types"
 export const createLobby = createAsyncThunk(
     'user/createLobby',
     async (userId: string) => {
-        const colRef = await addDoc(collection(db, 'lobbies'), {
-            gameType: 'COUNTING',
-            host: userId,
-            guest: '',
-            start: false
+        const res = await fetch('/api/user/createlobby',{
+            method: 'POST',
+            body: JSON.stringify({userId})                            
         })
-        const docRef = doc(db, 'lobbies', colRef.id)
-        const lobbyData = await getDoc(docRef)
-        if (lobbyData.exists()) {
-            const id = lobbyData.id as string
-            const data = lobbyData.data() as lobbyDataDb
-            return {id,...data}
-        }
+        const data = await res.json()
+        return data
     }
 )
 
 export const changeGameType = createAsyncThunk(
     'user/changeGameType',
     async ({ lobbyId, gameType }: {lobbyId: string; gameType: GameTypes}) => {
-        const docRef = doc(db, 'lobbies', lobbyId)
-        await updateDoc(docRef, {
-            gameType
+        const res = await fetch('/api/user/gametype', {
+            method: 'POST',
+            body: JSON.stringify({lobbyId, gameType})
         })
+        const data = await res.json()
+        return data
     }
 )
 
@@ -44,17 +39,12 @@ export const joinLobby = createAsyncThunk(
     'user/joinLobby',
     async (args: LobbyArgs) => {
         const {userId, lobbyId} = args
-        console.log(userId, lobbyId)
-        const docRef = doc(db, 'lobbies', lobbyId)
-        await updateDoc(docRef, {
-            guest: userId
+        const res = await fetch('/api/user/joinlobby', {
+            method: 'POST',
+            body: JSON.stringify({userId, lobbyId})
         })
-        const lobbyData = await getDoc(docRef)
-        if (lobbyData.exists()) {
-            const id = lobbyData.id as string
-            const data = lobbyData.data() as lobbyDataDb
-            return {id,...data}
-        }
+        const data = await res.json()
+        return data
     }
 )
 
@@ -62,39 +52,25 @@ export const joinLobby = createAsyncThunk(
 export const leaveLobby = createAsyncThunk(
     'user/leaveLobby',
     async (args: LobbyArgs) => {
-        await leave(args)
+        const {userId, lobbyId} = args
+        const res = await fetch('/api/user/leavelobby', {
+            method: 'POST',
+            body: JSON.stringify({userId, lobbyId})
+        })
+        const data = await res.json()
+        return data
     }
 )
 
-async function leave(args: LobbyArgs) {
-    const {userId, lobbyId} =  args
-    const docRef = doc(db, 'lobbies', lobbyId)
-    const docSnap = await getDoc(docRef)
-
-    if (docSnap.exists()) {
-        const data = docSnap.data() as lobbyDataDb
-        const { guest, host } = data
-        if (guest === userId) {
-            await updateDoc(docRef, {
-                guest: ''
-            })
-            return
-        }
-        else if (host === userId) {
-            await deleteDoc(docRef)
-            return
-        }
-        
-    }    
-}
 
 export const userStartGame = createAsyncThunk(
     'user/startGame',
     async (lobbyId: string) => {
-        const docRef = doc(db, 'lobbies', lobbyId);
-        await updateDoc(docRef, {
-            start: true
+        const res = await fetch('/api/user/startgame', {
+            method: 'POST',
+            body: JSON.stringify({lobbyId})
         })
-        return
+        const data = await res.json()
+        return data
     }
 )
