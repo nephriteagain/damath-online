@@ -115,3 +115,11 @@ export interface moveArgs {
     players: players,
     score: score
 }
+
+
+export interface movablePieces {
+    piece: piece;
+    index: number;
+    jumpIndex: number;
+    direction: 'top right'|'top left'|'bot right'|'bot left'
+}
