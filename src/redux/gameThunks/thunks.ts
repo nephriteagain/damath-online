@@ -84,29 +84,25 @@ export const requestRestart = createAsyncThunk(
     'game/requestRestart',
     async (args: {userId:string, gameId: string}) => {
         const { userId, gameId} = args
-        const docRef = doc(db, 'games', gameId)
-        try {
-            await updateDoc(docRef, {
-                message: {
-                    type: messageType.REQUEST_RESTART,
-                    sender: userId
-                }
-            })
-        } catch (error) {
-            console.error(error)
-        }
+        const res = await fetch('/api/game/request/restart', {
+            method: 'POST',
+            body: JSON.stringify({userId, gameId})
+        })
+        const data = await res.json()
+        return data
     }
 )
 
 export const approveRestart = createAsyncThunk(
     'game/approveRestart',
     async (approveArgs : {id:string; gameType: GameTypes}) => {
-        const { id, gameType, } = approveArgs
-        const docRef = doc(db, 'games', id)
-        await updateDoc(docRef, {
-            boardData : games[`${gameType}`],   
-            message: {}
+        const {id, gameType} = approveArgs
+        const res = await fetch('/api/game/approve/restart', {
+            method: 'POST',
+            body: JSON.stringify({id, gameType})
         })
+        const data = await res.json()
+        return data
     }
 )
 
@@ -127,18 +123,12 @@ export const requestChangeGameMode = createAsyncThunk(
     'game/requestChangeGameMode',
     async (args: {userId:string; gameId: string; gameType: GameTypes})  => {
         const { userId, gameId, gameType } = args
-        const docRef = doc(db, 'games', gameId)
-        try {
-            await updateDoc(docRef, {
-                message: {
-                    type: messageType.REQUEST_CHANGE_GAME_MODE,
-                    sender: userId,
-                    data: gameType
-                }
-            })
-        } catch (error) {
-            console.error(error)
-        }
+        const res = await fetch('/api/game/request/gamemode', {
+            method: 'POST',
+            body: JSON.stringify({userId, gameId, gameType})
+        })
+        const data = await res.json()
+        return data
     }
 )
 
@@ -146,10 +136,11 @@ export const approveChangeGameMode = createAsyncThunk(
     'game/approveChangeGameMode',
     async (approveArgs : {id:string; gameType: GameTypes}) => {
         const { id, gameType, } = approveArgs
-        const docRef = doc(db, 'games', id)
-        await updateDoc(docRef, {
-            boardData : games[`${gameType}`],   
-            message: {}
+        const res = await fetch('/api/game/approve/gamemode', {
+            method: 'POST',
+            body: JSON.stringify({id, gameType})
         })
+        const data = await res.json()
+        return data
     }
 )
