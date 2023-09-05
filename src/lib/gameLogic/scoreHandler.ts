@@ -45,6 +45,7 @@ export function scoreHandler(
         ...oldScore,        
     }
     newScore[scoree] += result
+    newScore[scoree] = Number(newScore[scoree].toFixed(2))
     return newScore
 }
 
