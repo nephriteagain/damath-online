@@ -3,7 +3,7 @@ import { moveArgs } from "@/types/types";
 import { cloneDeep } from 'lodash';
 import { piece, boxPiece } from '@/types/types';
 import { movePiece as movePieceHelper } from '@/lib/gameLogic/movePiece';
-import { checkMovablePieces } from '@/lib/gameLogic/checkMovablePieces';
+import { checkMovablePieces, kingPromoter } from '@/lib/gameLogic/checkMovablePieces';
 import { getNewPieceBox, scoreHandler } from '@/lib/gameLogic/scoreHandler';
 import { db } from '@/db/firebase';
 import { updateDoc, doc } from 'firebase/firestore';
@@ -15,8 +15,6 @@ export async function POST(req: Request) {
     if (
         !boardData || 
         !piece || 
-        !index || 
-        !pieceIndex || 
         !playerTurn || 
         !id || 
         !players || 
@@ -50,6 +48,10 @@ export async function POST(req: Request) {
             nextTurn = playerTurn === players?.z ? players?.z : players?.x
         }
 
+        if (!canMultiJump) {
+            kingPromoter(boardDataWithNewMoves)
+        }
+
 
     try {
         const docRef = doc(db, 'games', id)
@@ -64,6 +66,9 @@ export async function POST(req: Request) {
     }
 }
 
+/**
+ * @description count all the pieces currently on the param board
+ */
 function pieceCount(board: boxPiece[]) : number {
     let count = 0
     board.forEach(box => {

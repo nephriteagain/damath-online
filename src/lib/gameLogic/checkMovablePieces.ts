@@ -88,6 +88,26 @@ export function checkMovablePieces(
 }
 
 /**
+ * 
+ * @param boardData game board
+ * @description checks if there is a pawn to be promoted
+ */
+export function kingPromoter(boardData: boxPiece[]) {
+    boardData.forEach((box) => {
+        if (box?.piece?.type === 'z') {
+            if (!box.piece.king && box.y === 7) {
+                box.piece.king = true
+            }
+        }
+        if (box?.piece?.type === 'x') {
+            if (!box.piece.king && box.y === 0) {
+                box.piece.king = true
+            }
+        }
+    })
+}
+
+/**
  * @description for king pieces only, check if the piece is movable
  */
 function kingMovable(

@@ -1,8 +1,6 @@
-import { db } from "@/db/firebase"
 import { createAsyncThunk } from "@reduxjs/toolkit"
-import { addDoc, doc, collection, updateDoc, getDoc, deleteDoc,  } from "firebase/firestore"
 
-import { GameTypes, lobbyDataDb } from "@/types/types"
+import { GameTypes } from "@/types/types"
 
 export const createLobby = createAsyncThunk(
     'user/createLobby',

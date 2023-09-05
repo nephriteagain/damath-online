@@ -1,22 +1,11 @@
-import { players, message, messageType, GameTypes, gameData } from './../../types/types';
-import { db } from "@/db/firebase"
+import {  GameTypes, gameData } from './../../types/types';
 import { createAsyncThunk } from "@reduxjs/toolkit"
 import { lobbyData } from "@/types/types"
 
-import { setDoc, doc, getDoc, updateDoc, addDoc, collection } from "firebase/firestore"
 import { COUNTING, INTEGER, WHOLE } from "@/lib/data"
 
-import {  boxPiece, piece, moveArgs} from "@/types/types"
-import { movePiece as movePieceHelper } from "@/lib/gameLogic/movePiece"
-import { checkMovablePieces } from "@/lib/gameLogic/checkMovablePieces"
-import { generateId } from '../userSlice';
-import { scoreHandler, getNewPieceBox,  } from '@/lib/gameLogic/scoreHandler';
-import { cloneDeep } from 'lodash';
-const games = {
-    'COUNTING': COUNTING,
-    'WHOLE': WHOLE,
-    'INTEGER': INTEGER,
-}
+import {  boxPiece,  moveArgs} from "@/types/types"
+
 
 /**
  * @description creates a new document in the "games" collection
@@ -35,18 +24,7 @@ export const startGame = createAsyncThunk(
     }
 )
 
-/**
- * @description count all the pieces currently on the param board
- */
-function pieceCount(board: boxPiece[]) : number {
-    let count = 0
-    board.forEach(box => {
-        if (box?.piece) {
-            count++
-        }
-    })
-    return count
-}
+
 
 /**
  * @description is the thunk that will write the new game state in the db
