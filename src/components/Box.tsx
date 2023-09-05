@@ -46,14 +46,14 @@ export default function Box({playable, piece, operation, index, highlighted}: Bo
             onClick={highlighted ? (e) => handleClick(e,index) : undefined}
         >
             {
-                (piece != undefined && piece.movable) &&
+                (piece != undefined && piece.moves.length > 0) &&
                 <Piece 
                     piece={piece}
                     index={index}
                 /> 
             }
             {
-                (piece != undefined && !piece.movable) &&
+                (piece != undefined && piece.moves.length === 0) &&
                 <Piece 
                     piece={piece} 
                 /> 

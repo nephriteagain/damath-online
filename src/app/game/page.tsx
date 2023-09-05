@@ -63,7 +63,7 @@ export default function Home() {
               boardStyleFlip(board, horizontalNum, verticalNum)
             }
 
-            if (!boardData.some(box => box?.piece?.movable === true)) {
+            if (!boardData.some(box => box?.piece?.moves && box.piece.moves.length > 0)) {
               const totalScores = {...score}
               totalScores.x += getTotalRemainingScore('x', boardData)
               totalScores.z += getTotalRemainingScore('z', boardData)

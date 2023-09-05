@@ -7,6 +7,7 @@ import { regularMoveSearch } from "@/lib/gameLogic/regularMoveSearch";
 import { kingMoveSearch } from "@/lib/gameLogic/kingMoveSearch/kingMoveSearch";
 
 import { startGame, movePiece, leaveGame, gameOver } from "./gameThunks/thunks";
+import { cloneDeep } from "lodash";
 
 const initialState : GameState = {
     gameBoard: COUNTING,
@@ -21,20 +22,19 @@ export const gameSlice = createSlice({
     reducers: {
         hightlightMoves(state: GameState, action: action) {
             const index = action.payload.index as number;
-            const boardData = state.gameBoard as boxPiece[];
             const piece = action.payload.piece as piece
-            if (piece.king) {
-                const newBoardData = kingMoveSearch(boardData, piece, index)
-                state.gameBoard = newBoardData;
-                state.pieceToMove = piece
-                state.pieceIndex = index
-            } 
-            if (!piece.king) {
-                const newBoardData = regularMoveSearch(boardData, piece, index)
-                state.gameBoard = newBoardData;
-                state.pieceToMove = piece
-                state.pieceIndex = index
-            }
+            const boardCopy = cloneDeep(state.gameBoard)
+            boardCopy.forEach(box => {
+                if (box.hightlighted) {
+                    box.hightlighted = false
+                }
+            })
+            piece.moves.forEach(move => {   
+                boardCopy[move].hightlighted = true
+            })
+            state.gameBoard = boardCopy
+            state.pieceToMove = piece
+            state.pieceIndex = index
         },
         adjustPieces(state, action: action) {
             if (action?.payload?.gameBoard) {

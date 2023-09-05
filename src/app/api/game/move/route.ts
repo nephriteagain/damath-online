@@ -32,8 +32,8 @@ export async function POST(req: Request) {
         const didCapturedAPiece = pieceCount(boardData) > pieceCount(newBoardData)
 
         
-        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck, didCapturedAPiece)
-        const canMultiJump = boardDataWithNewMoves.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
+        const boardDataWithNewMoves = checkMovablePieces(newBoardData, playerToCheck, didCapturedAPiece, piece)
+        const canMultiJump = boardDataWithNewMoves.some(box => box?.piece?.moves && box.piece.moves.length > 0 && box?.piece?.type !== playerToCheck && box?.piece?.value === piece.value)
         
         let newScore = score
         if (didCapturedAPiece) {
@@ -66,9 +66,7 @@ export async function POST(req: Request) {
     }
 }
 
-/**
- * @description count all the pieces currently on the param board
- */
+
 function pieceCount(board: boxPiece[]) : number {
     let count = 0
     board.forEach(box => {

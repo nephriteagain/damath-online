@@ -29,16 +29,16 @@ export default function Piece({piece, index}: PieceProps) {
     }
 
     const onClick = (
-        piece.movable &&  
+        piece.moves.length > 0 &&  
         players != undefined && 
         players[piece.type] === id &&
         playerTurn === id
     ) ? handleClick : undefined
 
-    const { type, value, movable, king } = piece
+    const { type, value,  king, moves } = piece
     return (
         <div className={`z-10 ${type === 'z' ? 'red-piece' : 'blue-piece'}
-            ${movable ? 'opacity-100 cursor-pointer' : 'opacity-70'}
+            ${moves.length > 0 ? 'opacity-100 cursor-pointer' : 'opacity-70'}
             ${king ? 'border-4 border-dashed border-black' : ''}
             flex items-center justify-center aspect-square w-[80%] text-2xl text-white rounded-full`}
             onClick={onClick}

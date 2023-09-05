@@ -42,7 +42,7 @@ export interface piece {
     type: 'x'|'z';
     value: number;
     king: boolean;
-    movable: boolean;
+    moves: number[];
 }
 
 export enum operation {

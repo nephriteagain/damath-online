@@ -8,7 +8,8 @@ import { getMovablePieces } from "./multiJumpSearcher";
 export function checkMovablePieces(
     boardData: boxPiece[],
     playerToCheck: 'x'|'z',
-    didCapturedAPiece: boolean
+    didCapturedAPiece: boolean,
+    piece: piece
 ) : boxPiece[] {
     const boardCopy = cloneDeep(boardData).map(box => {
         if (box?.piece) {
@@ -16,7 +17,7 @@ export function checkMovablePieces(
                 ...box,
                 piece: {
                     ...box.piece,
-                    movable: false
+                    moves: []
                 }
             }
         }
@@ -27,7 +28,7 @@ export function checkMovablePieces(
     let boardCopyWithJumps = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
             if (box.piece.king ) {
-                kingJumpableAllDirections(boardCopy, box.piece, index)                
+                kingJumpableAllDirections(boardCopy, box.piece, index, movablePieces)                
             }
             if (!box.piece.king ) {
                 movableJump(boardCopy, index, box.piece, movablePieces)
@@ -37,23 +38,23 @@ export function checkMovablePieces(
         return box
     })
     if (didCapturedAPiece) {
-        const canMultiJump = boardCopyWithJumps.some(box => box?.piece?.movable && box?.piece?.type !== playerToCheck)
+        const canMultiJump = boardCopyWithJumps.some(box => box?.piece?.moves && box.piece.moves.length > 0 && box?.piece?.type !== playerToCheck && box?.piece?.value === piece.value)
         if (canMultiJump) {
             boardCopyWithJumps.map(box => {
                 if (box?.piece?.type === playerToCheck) {
-                    box.piece.movable = false
+                    box.piece.moves = []
                     return box
                 }
                 return box
             })
-            if (boardCopyWithJumps.some(box => box?.piece?.movable)) {
+            if (boardCopyWithJumps.some(box => box?.piece?.moves && box.piece.moves.length > 0)) {
                 return boardCopyWithJumps
             }
         }
     } else {
         boardCopyWithJumps.map(box => {
             if (box?.piece && box?.piece?.type !== playerToCheck) {
-                box.piece.movable = false
+                box.piece.moves = []
                 return box
             }
             return box
@@ -67,15 +68,15 @@ export function checkMovablePieces(
 
     // check if there is a force jumps,
     // if there is skip checking for moves
-    if (boardCopyWithJumps.some(box => box?.piece?.movable)) {
-        boardCopyWithJumps = getMovablePieces(boardCopyWithJumps, movablePieces)
+    if (boardCopyWithJumps.some(box => box?.piece?.moves && box.piece.moves.length > 0)) {
+        // boardCopyWithJumps = getMovablePieces(boardCopyWithJumps, movablePieces)
         return boardCopyWithJumps
     }
 
     const boardCopyWithMoves = boardCopy.map((box,index) => {
         if (box?.piece != undefined) {
             if (box.piece.king && box.piece.type === playerToCheck) {
-                kingMovableAllDirections(boardCopy, box.piece, index)
+                kingMovableAllDirections(boardCopy, box.piece, index,)
             }
             if (!box.piece.king && box.piece.type === playerToCheck) {
                 movable(boardCopy, index, box.piece)
@@ -114,32 +115,57 @@ function kingMovable(
     boardData: boxPiece[],
     piece: piece,
     index: number,
-    number: number
+    number: number,
+    movableArr?: movablePieces[],
 ) {
     const numToAdd = toAdd(number)
     const move = boardData[index + number]
     if ( move?.playable && move?.piece == undefined ) {
-        piece.movable = true
-        kingMovable(boardData, piece, index, (number + numToAdd))
+        piece.moves.push(index+number)
+        if (movableArr) {
+            const p = boardData.find(box => box?.piece?.type === piece?.type && box?.piece?.value === piece?.value) as boxPiece
+            const newIndex = boardData.indexOf(p) as number
+            const direction = getDirection(number)
+            movableArr.push({
+                piece,
+                index: newIndex,
+                jumpIndex: index + number,
+                direction: direction
+            })
+        }
+        kingMovable(boardData, piece, index, (number + numToAdd), movableArr, )
     }
 }
 
+function getDirection(numDir: number) {
+    if (numDir === -7) {
+        return 'top right'
+    }
+    if (numDir === -9) {
+        return 'top left'
+    }
+    if (numDir === 9) {
+        return 'bot right'
+    }
+    return 'bot left'
+}
 
 /**
  * @description for king pieces only, if the pieces can capture another piece
  */
-function kingJumpable(
+export function kingJumpable(
     boardData: boxPiece[],
     piece: piece,
     index: number,
-    number: number
+    number: number,
+    movableArr?: movablePieces[],
 ) {
     const numToAdd = toAdd(number)
     
     const move = boardData[index + number]
     const jump = boardData[index + (number+numToAdd)]
     if (move?.playable && move?.piece == undefined) {
-        kingJumpable(boardData, piece, (index + numToAdd), number)
+        kingJumpable(boardData, piece, (index + numToAdd), number, movableArr, )
     }
 
     if (
@@ -147,7 +173,7 @@ function kingJumpable(
         move?.piece?.type !== piece?.type &&
         jump?.playable && jump?.piece == undefined
     ) {
-        kingMovable(boardData, piece,  index + number, number)
+        kingMovable(boardData, piece,  index + number, number, movableArr, )
     }
 }
 
@@ -158,11 +184,12 @@ function kingJumpableAllDirections(
     boardData: boxPiece[],
     piece: piece,
     index: number,
+    movableArr?: movablePieces[]
 ) {
-    kingJumpable(boardData, piece, index, -7)
-    kingJumpable(boardData, piece, index, -9)
-    kingJumpable(boardData, piece, index, 7)
-    kingJumpable(boardData, piece, index, 9)
+    kingJumpable(boardData, piece, index, -7, movableArr)
+    kingJumpable(boardData, piece, index, -9, movableArr)
+    kingJumpable(boardData, piece, index, 7, movableArr)
+    kingJumpable(boardData, piece, index, 9, movableArr)
 }
 
 /**
@@ -172,11 +199,12 @@ function kingMovableAllDirections(
     boardData: boxPiece[],
     piece: piece,
     index: number,
+    movableArr?: movablePieces[]
 ) {
-    kingMovable(boardData, piece, index, -7)
-    kingMovable(boardData, piece, index, -9)
-    kingMovable(boardData, piece, index, 7)
-    kingMovable(boardData, piece, index, 9)
+    kingMovable(boardData, piece, index, -7, movableArr)
+    kingMovable(boardData, piece, index, -9, movableArr)
+    kingMovable(boardData, piece, index, 7, movableArr)
+    kingMovable(boardData, piece, index, 9, movableArr)
 }
 
 /**
@@ -208,7 +236,7 @@ export function movableJump(
         jumpTopRight?.playable && jumpTopRight?.piece == undefined &&
         direction !== 'bot left'
     ) {
-        piece.movable = true
+        piece.moves.push(index-14)
         movableArr && movableArr.push({
             piece, index, direction: 'top right', jumpIndex: index-14
         })
@@ -221,7 +249,7 @@ export function movableJump(
         direction !== 'bot right'
         
     ) {
-        piece.movable = true    
+        piece.moves.push(index-18)
         movableArr && movableArr.push({
             piece, index, direction: 'top left', jumpIndex: index-18
         })
@@ -234,7 +262,7 @@ export function movableJump(
         direction !== 'top left'
 
     ) {
-        piece.movable = true
+        piece.moves.push(index+18)
         movableArr && movableArr.push({
             piece, index, direction: 'bot right', jumpIndex: index+18
         })
@@ -247,7 +275,7 @@ export function movableJump(
         direction !== 'top right'
         
     ) {
-        piece.movable = true
+        piece.moves.push(index+14)
         movableArr && movableArr.push({
             piece, index, direction: 'bot left', jumpIndex: index+14
         })
@@ -270,10 +298,11 @@ function movable(
 
         // is a playable area and // has no piece in it
         if (topRight?.playable && topRight?.piece == undefined) {
-            piece.movable = true
+            piece.moves.push(index-7)
         }
         if (topLeft?.playable && topLeft?.piece == undefined) {
-            piece.movable = true
+            piece.moves.push(index-9)
+
         }
     }
     if (piece.type === 'x') {
@@ -282,10 +311,10 @@ function movable(
         
         // is a playable area and // has no piece in it
         if (botRight?.playable && botRight?.piece == undefined) {
-            piece.movable = true
+            piece.moves.push(index+9)
         }
         if (botLeft?.playable && botLeft?.piece == undefined) {
-            piece.movable = true
+            piece.moves.push(index+7)
         }
     }
     
