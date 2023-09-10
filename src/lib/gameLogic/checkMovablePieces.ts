@@ -1,7 +1,7 @@
 import { boxPiece, movablePieces, piece, players } from "@/types/types";
 import { cloneDeep,  } from "lodash";
 import { toAdd } from "./kingMoveSearch/kingMoveSearch";
-import { getMovablePieces } from "./multiJumpSearcher";
+// import { multiJumpFilter } from "./multiJumpSearcher";
 /**
  * @description check the boards's each pieces their current movability
  */
@@ -59,10 +59,12 @@ export function checkMovablePieces(
             }
             return box
         })
-        // TODO: add force eat here
-        // this has a bug, fix it
-        // const movablePieces = getAllMovablePieces(boardCopyWithJumps)
-        // boardCopyWithJumps = kingJumpableMultiple(boardData, movablePieces)
+        movablePieces = movablePieces.filter(p => p.piece.type !== playerToCheck)
+        /**
+         * handles multi jump filter
+         */
+        // multiJumpFilter(boardCopyWithJumps, movablePieces)
+            
     }
     
 
@@ -137,7 +139,7 @@ function kingMovable(
     }
 }
 
-function getDirection(numDir: number) {
+export function getDirection(numDir: number) {
     if (numDir === -7) {
         return 'top right'
     }
